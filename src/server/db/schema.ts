@@ -3,11 +3,12 @@
 
 import { sql } from "drizzle-orm";
 import {
-  bigint,
-  index,
+  int,
   mysqlTableCreator,
+  serial,
   timestamp,
-  varchar,
+  uniqueIndex,
+  varchar
 } from "drizzle-orm/mysql-core";
 
 /**
@@ -18,17 +19,31 @@ import {
  */
 export const mysqlTable = mysqlTableCreator((name) => `katelier-t3-pnpm_${name}`);
 
-export const posts = mysqlTable(
-  "post",
+export const users = mysqlTable(
+  "users",
   {
-    id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+    id: serial("id").primaryKey().notNull(),
+    email: varchar("email", { length: 32 }).notNull(),
+    avatarUrl: varchar("avatar_url", { length: 150 }),
+    phoneNumber: varchar("phone_number", { length: 72 }),
     name: varchar("name", { length: 256 }),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt").onUpdateNow(),
   },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
+  (users) => ({
+    emailIndex: uniqueIndex("name_idx").on(users.email),
+  }),
+);
+export const auth = mysqlTable(
+  "auth",
+  {
+    id: serial("id").primaryKey().notNull(),
+    userId: int("user_id").notNull(),
+    hashedPassword: varchar("hashed_password", { length: 256 }).notNull(),
+  },
+  (auth) => ({
+    userIdIndex: uniqueIndex("name_idx").on(auth.userId),
+  }),
 );

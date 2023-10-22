@@ -3,18 +3,23 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { api } from "~/trpc/react";
+const createPost = {
+  isLoading: true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  mutate: (args: unknown) => void 0,
+};
 
 export function CreatePost() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
   const [name, setName] = useState("");
 
-  const createPost = api.post.create.useMutation({
-    onSuccess: () => {
-      router.refresh();
-      setName("");
-    },
-  });
+  // const createPost = api.auth.create.useMutation({
+  //   onSuccess: () => {
+  //     router.refresh();
+  //     setName("");
+  //   },
+  // });
 
   return (
     <form
