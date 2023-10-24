@@ -48,3 +48,16 @@ export const auth = mysqlTable(
   }),
 );
 export const authSelectSchema = auth.$inferSelect
+
+export const registrationTokens = mysqlTable(
+  "registration_tokens",
+  {
+    id: serial("id").primaryKey().notNull(),
+    token: varchar("token", { length: 256 }).notNull(),
+    usedBy: int("used_by"),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    usedAt: timestamp("used_at"),
+  },
+);

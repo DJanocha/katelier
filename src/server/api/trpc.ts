@@ -7,16 +7,16 @@
  * need to use are documented accordingly near the end.
  */
 import { TRPCError, initTRPC } from "@trpc/server";
-import * as bcrypt from "bcrypt";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import {
-  decodeToken,
+  jwt,
   type JwtPayload
 } from "~/server/jwt";
 
 import { db } from "~/server/db";
+import { bcrypt } from "~/server/bcrypt";
 
 /**
  * 1. CONTEXT
@@ -120,7 +120,7 @@ const isLoggedIn = t.middleware(async ({ ctx, next }) => {
   // const tokenInfo =await  jwt.verify(jwtToken, env.JWT_SECRET)
   let tokenInfo: JwtPayload;
   try {
-    tokenInfo = await decodeToken(jwtToken);
+    tokenInfo = await jwt.decodeToken(jwtToken)
   } catch (error) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
