@@ -18,31 +18,37 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
+import {
+  type RegisterFormType,
+  registerFormSchema,
+} from "~/validation-schemas/auth";
 
 type UserRegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
-
-const registerFormSchema = z.object({
-  username: z.string().min(3),
-  password: z.string().min(3),
-  secretKey: z.string().min(3),
-});
-type RegisterFormType = z.infer<typeof registerFormSchema>;
 
 export function UserRegisterForm({
   className,
   ...props
 }: UserRegisterFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const { mutate: registerMutate, isLoading: isRegisterMutationLoading } =
+    api.auth.register.useMutation({
+      onSuccess: ({ me }) => {
+        console.log("registered in successfully!", { me });
+      },
+      onError: (error) => {
+        console.log("could not  register:", { error });
+      },
+    });
   const registerForm = useForm<RegisterFormType>({
     resolver: zodResolver(registerFormSchema),
   });
 
   const loginSubmit = React.useCallback<SubmitHandler<RegisterFormType>>(
     (registerFormValues) => {
+      registerMutate(registerFormValues);
       console.log({ registerFormValues });
     },
-    [],
+    [registerMutate],
   );
 
   return (
@@ -52,16 +58,14 @@ export function UserRegisterForm({
           <div className="flex flex-col gap-4">
             <FormField
               control={registerForm.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="shadcn" {...field} type="email" />
                   </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
+                  <FormDescription>This is your email .</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -82,7 +86,7 @@ export function UserRegisterForm({
             />
             <FormField
               control={registerForm.control}
-              name="secretKey"
+              name="registrationToken"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Secret key</FormLabel>
@@ -98,8 +102,10 @@ export function UserRegisterForm({
               )}
             />
 
-            <Button disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button disabled={isRegisterMutationLoading}>
+              {isRegisterMutationLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Create an account
             </Button>
           </div>

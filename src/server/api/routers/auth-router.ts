@@ -55,12 +55,14 @@ export const authRouter = createTRPCRouter({
           message: "Email is already occupied",
         });
       }
+      console.log('email is not occupied')
       const isTokenValid = await ctx.db.query.registrationTokens.findFirst({
         where: ({ token, usedBy, usedAt }, { eq, isNull }) =>
           eq(token, input.registrationToken) &&
           isNull(usedBy) &&
           isNull(usedAt),
       });
+      console.log('token is valid', { isTokenValid })
       if (!isTokenValid) {
         throw new TRPCError({
           code: "CONFLICT",
@@ -85,5 +87,8 @@ export const authRouter = createTRPCRouter({
         .update(registrationTokens)
         .set({ usedAt: new Date(), usedBy: newUser.id })
         .where(eq(registrationTokens.token, input.registrationToken));
+      return {
+        me: newUser
+      }
     }),
 });
