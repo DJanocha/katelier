@@ -6,10 +6,15 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
+import * as bcrypt from "bcrypt";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import {
+  decodeToken,
+  type JwtPayload
+} from "~/server/jwt";
 
 import { db } from "~/server/db";
 
@@ -100,3 +105,56 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+const isLoggedIn = t.middleware(async ({ ctx, next }) => {
+  const authHeaders = ctx.headers.get("Authorization");
+  if (!authHeaders) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const jwtToken = authHeaders.split(" ")[1];
+  if (!jwtToken) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  // const tokenInfo =await  jwt.verify(jwtToken, env.JWT_SECRET)
+  let tokenInfo: JwtPayload;
+  try {
+    tokenInfo = await decodeToken(jwtToken);
+  } catch (error) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const { hashedPassword, userId } = tokenInfo;
+  const matchingUserInDb = await ctx.db.query.users.findFirst({
+    where: ({ id }, { eq }) => eq(id, userId),
+  });
+  if (!matchingUserInDb) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const matchingUserInDbAuthInfo = await ctx.db.query.auth.findFirst({
+    where: ({ userId }, { eq }) => eq(userId, userId),
+  });
+  if (!matchingUserInDbAuthInfo) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  const passwordsMatch = await bcrypt.compare(
+    matchingUserInDbAuthInfo.hashedPassword,
+    hashedPassword,
+  );
+
+  if (!passwordsMatch) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      user: matchingUserInDb,
+    },
+  });
+});
+
+export const protectedProcedure = publicProcedure.use(isLoggedIn)

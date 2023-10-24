@@ -28,6 +28,7 @@ const loginFormSchema = z.object({
 type LoginFormType = z.infer<typeof loginFormSchema>;
 
 export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const registerForm = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),

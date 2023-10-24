@@ -47,3 +47,4 @@ export const auth = mysqlTable(
     userIdIndex: uniqueIndex("name_idx").on(auth.userId),
   }),
 );
+export const authSelectSchema = auth.$inferSelect

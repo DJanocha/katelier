@@ -32,6 +32,7 @@ export function UserRegisterForm({
   className,
   ...props
 }: UserRegisterFormProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const registerForm = useForm<RegisterFormType>({
     resolver: zodResolver(registerFormSchema),

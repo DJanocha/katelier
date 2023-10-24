@@ -23,10 +23,11 @@
     "@trpc/next": "^10.37.1",
     "@trpc/react-query": "^10.37.1",
     "@trpc/server": "^10.37.1",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "drizzle-orm": "^0.28.5",
-    "json-web-token": "^3.2.0",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.288.0",
     "next": "^13.5.4",
@@ -39,7 +40,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.1",
     "@types/eslint": "^8.44.2",
+    "@types/jsonwebtoken": "^9.0.4",
     "@types/lodash": "^4.14.200",
     "@types/node": "^18.16.0",
     "@types/react": "^18.2.20",
