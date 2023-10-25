@@ -1,4 +1,3 @@
-import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -30,8 +29,8 @@ export const authRouter = createTRPCRouter({
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
     const passwordsMatch = await bcrypt.compare(
-      matchingUserInDbAuthInfo.hashedPassword,
       input.password,
+      matchingUserInDbAuthInfo.hashedPassword,
     );
     if (!passwordsMatch) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -55,14 +54,14 @@ export const authRouter = createTRPCRouter({
           message: "Email is already occupied",
         });
       }
-      console.log('email is not occupied')
       const isTokenValid = await ctx.db.query.registrationTokens.findFirst({
-        where: ({ token, usedBy, usedAt }, { eq, isNull }) =>
-          eq(token, input.registrationToken) &&
-          isNull(usedBy) &&
-          isNull(usedAt),
+        where: (tokens, { eq, isNull, and }) => and(
+          eq(tokens.token, input.registrationToken),
+          isNull(tokens.usedBy),
+          isNull(tokens.usedAt),
+
+        )
       });
-      console.log('token is valid', { isTokenValid })
       if (!isTokenValid) {
         throw new TRPCError({
           code: "CONFLICT",
