@@ -19,6 +19,7 @@ import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { loginFormSchema, type LoginFormType } from "~/validation-schemas/auth";
+import { useToast } from "~/components/ui/use-toast";
 
 type UserLoginFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -26,11 +27,17 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
   const registerForm = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),
   });
+  const { toast } = useToast();
   const { mutate: loginMutate, isLoading: isLoginMutationLoading } =
     api.auth.logIn.useMutation({
-      onSuccess: (response) =>
-        console.log("successfully loggged in, ", { response }),
-      onError: (error) => console.log("failed to login", { error }),
+      onSuccess: () => toast({ title: "successfully loggged in" }),
+      onError: (error) => {
+        toast({
+          variant: "destructive",
+          title: "Failed to log in",
+          description: error.message,
+        });
+      },
     });
 
   const loginSubmit = React.useCallback<SubmitHandler<LoginFormType>>(

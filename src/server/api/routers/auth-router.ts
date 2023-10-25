@@ -20,20 +20,20 @@ export const authRouter = createTRPCRouter({
       where: ({ email }, { eq }) => eq(email, input.email),
     });
     if (!matchingUserInDb) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
     }
     const matchingUserInDbAuthInfo = await ctx.db.query.auth.findFirst({
       where: ({ userId }, { eq }) => eq(userId, matchingUserInDb.id),
     });
     if (!matchingUserInDbAuthInfo) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
     }
     const passwordsMatch = await bcrypt.compare(
       input.password,
       matchingUserInDbAuthInfo.hashedPassword,
     );
     if (!passwordsMatch) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
     }
 
     const token = jwt.create({ userId: matchingUserInDb.id });

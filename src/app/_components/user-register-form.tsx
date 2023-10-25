@@ -23,6 +23,7 @@ import {
   type RegisterFormType,
   registerFormSchema,
 } from "~/validation-schemas/auth";
+import { useToast } from "~/components/ui/use-toast";
 
 type UserRegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -30,13 +31,18 @@ export function UserRegisterForm({
   className,
   ...props
 }: UserRegisterFormProps) {
+  const { toast } = useToast();
   const { mutate: registerMutate, isLoading: isRegisterMutationLoading } =
     api.auth.register.useMutation({
-      onSuccess: ({ me }) => {
-        console.log("registered in successfully!", { me });
+      onSuccess: () => {
+        toast({ title: "registered in successfully" });
       },
       onError: (error) => {
-        console.log("could not  register:", { error });
+        toast({
+          variant: "destructive",
+          title: "Could not register",
+          description: error.message,
+        });
       },
     });
   const registerForm = useForm<RegisterFormType>({
