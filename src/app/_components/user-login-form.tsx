@@ -20,6 +20,8 @@ import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { loginFormSchema, type LoginFormType } from "~/validation-schemas/auth";
 import { useToast } from "~/components/ui/use-toast";
+import { useAtom } from "jotai";
+import { jwtTokenAtom } from "~/atoms/jwt-token-atom";
 
 type UserLoginFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -28,9 +30,16 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
     resolver: zodResolver(loginFormSchema),
   });
   const { toast } = useToast();
+  const [, setJwtToken] = useAtom(jwtTokenAtom);
+  const { mutate: __tempMutate } = api.auth.__tempProtectedMut.useMutation({
+    onSuccess: console.log,
+    onError: console.log,
+  });
   const { mutate: loginMutate, isLoading: isLoginMutationLoading } =
     api.auth.logIn.useMutation({
-      onSuccess: () => toast({ title: "successfully loggged in" }),
+      onSuccess: ({ token }) => {
+        toast({ title: "successfully loggged in" }), setJwtToken(token);
+      },
       onError: (error) => {
         toast({
           variant: "destructive",
@@ -44,9 +53,18 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
     (loginFormValues) => loginMutate(loginFormValues),
     [loginMutate],
   );
+  const [jwtToken] = useAtom(jwtTokenAtom);
+  console.log({ jwtTokenInLoginUserForm: jwtToken });
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Button variant={"secondary"} onClick={() => __tempMutate()}>
+        tempMutateProtected
+      </Button>
+      <span>
+        jwt: {jwtToken.split("").slice(0, 5).join("")}...
+        {jwtToken.split("").slice(-5).join("")}
+      </span>
       <Form {...registerForm}>
         <form onSubmit={registerForm.handleSubmit(loginSubmit)}>
           <div className="flex flex-col gap-4">

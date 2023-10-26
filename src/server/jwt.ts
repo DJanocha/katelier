@@ -4,15 +4,17 @@ import { env } from '~/env.mjs';
 
 export const jwtPayloadSchema = z.object({
     hashedPassword: z.string(),
-    userId: z.number()
+    userId: z.number(),
+    email: z.string(),
 })
 export type JwtPayload = z.infer<typeof jwtPayloadSchema>
+type F = _jwt.JwtPayload & JwtPayload
 
 async function verifyToken(token: string) {
     return new Promise((resolve, reject) => {
         if (!token) reject({})
 
-        _jwt.verify(token, env.JWT_SECRET, (err, decoded) => err ? reject({}) :
+        _jwt.verify(token, env.JWT_SECRET, (err, decoded) => err ? reject({ message: "token invalid" }) :
             resolve(decoded))
     }
     );
@@ -20,12 +22,12 @@ async function verifyToken(token: string) {
 
 export const decodeToken = async (token: string) => {
     return new Promise<JwtPayload>((resolve, reject) => {
-        if (!token) return reject(null)
+        if (!token) return reject({ message: 'token not found' })
 
         const decoded = _jwt.decode(token, { complete: true })
-        if (!decoded) { reject(null) }
+        if (!decoded) { reject({ message: 'could not decode token' }) }
         const validationResult = jwtPayloadSchema.safeParse(decoded?.payload)
-        if (!validationResult.success) { return reject(null) }
+        if (!validationResult.success) { return reject({ message: 'token-encoded data in unexpected shape', data: decoded?.payload }) }
         resolve(validationResult.data)
 
     }
@@ -35,7 +37,7 @@ export const decodeToken = async (token: string) => {
 const jwt = {
     verifyToken,
     decodeToken,
-    create: ({ userId }: { userId: number }) => _jwt.sign({ userId }, env.JWT_SECRET)
+    create: (payload: JwtPayload) => _jwt.sign(payload, env.JWT_SECRET)
 }
 
 export { verifyToken, jwt };

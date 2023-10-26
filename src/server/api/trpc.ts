@@ -10,13 +10,9 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import {
-  jwt,
-  type JwtPayload
-} from "~/server/jwt";
 
 import { db } from "~/server/db";
-import { bcrypt } from "~/server/bcrypt";
+import { getUserByTokenOrThrowUnauthorizedError } from "~/server/db-utils";
 
 /**
  * 1. CONTEXT
@@ -107,6 +103,9 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const isLoggedIn = t.middleware(async ({ ctx, next }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+  const allHeaders = ctx.headers.forEach(([key, val]) => console.log({ key, val }))
+  console.log({ allHeaders })
   const authHeaders = ctx.headers.get("Authorization");
   if (!authHeaders) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -117,44 +116,20 @@ const isLoggedIn = t.middleware(async ({ ctx, next }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  // const tokenInfo =await  jwt.verify(jwtToken, env.JWT_SECRET)
-  let tokenInfo: JwtPayload;
   try {
-    tokenInfo = await jwt.decodeToken(jwtToken)
+    const matchingUserInDb = await getUserByTokenOrThrowUnauthorizedError({ jwtToken })
+    return next({
+      ctx: {
+        ...ctx,
+        user: matchingUserInDb,
+      },
+    });
+
   } catch (error) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
+
   }
 
-  const { hashedPassword, userId } = tokenInfo;
-  const matchingUserInDb = await ctx.db.query.users.findFirst({
-    where: ({ id }, { eq }) => eq(id, userId),
-  });
-  if (!matchingUserInDb) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  const matchingUserInDbAuthInfo = await ctx.db.query.auth.findFirst({
-    where: ({ userId }, { eq }) => eq(userId, userId),
-  });
-  if (!matchingUserInDbAuthInfo) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  const passwordsMatch = await bcrypt.compare(
-    matchingUserInDbAuthInfo.hashedPassword,
-    hashedPassword,
-  );
-
-  if (!passwordsMatch) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  return next({
-    ctx: {
-      ...ctx,
-      user: matchingUserInDb,
-    },
-  });
 });
 
 export const protectedProcedure = publicProcedure.use(isLoggedIn)

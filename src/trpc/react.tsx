@@ -7,6 +7,8 @@ import { useState } from "react";
 
 import { type AppRouter } from "~/server/api/root";
 import { getUrl, transformer } from "./shared";
+import { useAtom } from "jotai";
+import { jwtTokenAtom } from "~/atoms/jwt-token-atom";
 
 export const api = createTRPCReact<AppRouter>();
 
@@ -15,6 +17,8 @@ export function TRPCReactProvider(props: {
   headers: Headers;
 }) {
   const [queryClient] = useState(() => new QueryClient());
+  const [jwtToken] = useAtom(jwtTokenAtom);
+  console.log({ jwtTokenInTrcpcReactProvider: jwtToken });
 
   const [trpcClient] = useState(() =>
     api.createClient({
@@ -27,14 +31,18 @@ export function TRPCReactProvider(props: {
         }),
         unstable_httpBatchStreamLink({
           url: getUrl(),
+
           headers() {
+            console.log({ jwtTokenInHeadersFn: jwtToken });
             const heads = new Map(props.headers);
             heads.set("x-trpc-source", "react");
+            heads.set("Authorization", "Bearer " + jwtToken);
+            console.log({ heads });
             return Object.fromEntries(heads);
           },
         }),
       ],
-    })
+    }),
   );
 
   return (

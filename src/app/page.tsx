@@ -5,13 +5,15 @@ import { api } from "~/trpc/server";
 
 export default async function Home() {
   const users = await api.auth.getAllUsers.query();
-  console.log({ users });
+  const { me } = await api.auth.getMe.query();
+  console.log({ users, me });
 
   return (
     <PageContainer>
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+          My email is{" "}
+          <span className="text-[hsl(280,100%,70%)]">{me?.email}</span> App
         </h1>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
           <Link

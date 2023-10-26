@@ -2,46 +2,74 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { bcrypt } from "~/server/bcrypt";
 import { auth, registrationTokens, users } from "~/server/db/schema";
 import { jwt } from "~/server/jwt";
 import { loginFormSchema, registerFormSchema } from "~/validation-schemas/auth";
 
 export const authRouter = createTRPCRouter({
+  getMe: protectedProcedure.query(({ ctx }) => {
+    return {
+      me: ctx.user,
+    };
+  }),
   getAllUsers: publicProcedure.input(z.void()).query(async ({ ctx }) => {
     const allUsers = await ctx.db.query.users.findMany();
     return {
       allUsers,
     };
   }),
-  logIn: publicProcedure.input(loginFormSchema).mutation(async ({ ctx, input }) => {
-    const matchingUserInDb = await ctx.db.query.users.findFirst({
-      where: ({ email }, { eq }) => eq(email, input.email),
-    });
-    if (!matchingUserInDb) {
-      throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
-    }
-    const matchingUserInDbAuthInfo = await ctx.db.query.auth.findFirst({
-      where: ({ userId }, { eq }) => eq(userId, matchingUserInDb.id),
-    });
-    if (!matchingUserInDbAuthInfo) {
-      throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
-    }
-    const passwordsMatch = await bcrypt.compare(
-      input.password,
-      matchingUserInDbAuthInfo.hashedPassword,
-    );
-    if (!passwordsMatch) {
-      throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
-    }
-
-    const token = jwt.create({ userId: matchingUserInDb.id });
-    return {
-      token,
-      user: matchingUserInDb
-    };
+  __tempProtectedMut: protectedProcedure.input(z.void()).mutation(({ ctx, input }) => {
+    return { protectedMessage: 'hi', input }
   }),
+  logIn: publicProcedure
+    .input(loginFormSchema)
+    .mutation(async ({ ctx, input }) => {
+      const matchingUserInDb = await ctx.db.query.users.findFirst({
+        where: ({ email }, { eq }) => eq(email, input.email),
+      });
+      if (!matchingUserInDb) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid credentials",
+        });
+      }
+      const matchingUserInDbAuthInfo = await ctx.db.query.auth.findFirst({
+        where: ({ userId }, { eq }) => eq(userId, matchingUserInDb.id),
+      });
+      if (!matchingUserInDbAuthInfo) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid credentials",
+        });
+      }
+      const passwordsMatch = await bcrypt.compare(
+        input.password,
+        matchingUserInDbAuthInfo.hashedPassword,
+      );
+      if (!passwordsMatch) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid credentials",
+        });
+      }
+
+      const token = jwt.create({
+        userId: matchingUserInDb.id,
+        email: matchingUserInDb.email,
+        hashedPassword: matchingUserInDbAuthInfo.hashedPassword,
+      });
+      ctx.headers.set("Authorization", token);
+      return {
+        token,
+        user: matchingUserInDb,
+      };
+    }),
   register: publicProcedure
     .input(registerFormSchema)
     .mutation(async ({ input, ctx }) => {
@@ -55,12 +83,12 @@ export const authRouter = createTRPCRouter({
         });
       }
       const isTokenValid = await ctx.db.query.registrationTokens.findFirst({
-        where: (tokens, { eq, isNull, and }) => and(
-          eq(tokens.token, input.registrationToken),
-          isNull(tokens.usedBy),
-          isNull(tokens.usedAt),
-
-        )
+        where: (tokens, { eq, isNull, and }) =>
+          and(
+            eq(tokens.token, input.registrationToken),
+            isNull(tokens.usedBy),
+            isNull(tokens.usedAt),
+          ),
       });
       if (!isTokenValid) {
         throw new TRPCError({
@@ -87,7 +115,7 @@ export const authRouter = createTRPCRouter({
         .set({ usedAt: new Date(), usedBy: newUser.id })
         .where(eq(registrationTokens.token, input.registrationToken));
       return {
-        me: newUser
-      }
+        me: newUser,
+      };
     }),
 });
