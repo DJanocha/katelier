@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
 import { env } from "~/env.mjs";
 import { getUserByTokenOrThrowUnauthorizedError } from "~/server/db-utils";
 
@@ -10,22 +11,30 @@ export async function middleware(req: Request) {
     if (isInPublicPage) {
         return NextResponse.next();
     }
-    const logOut = () => NextResponse.redirect(new URL("/hello-again", req.url), {});
+    const logOut = () =>
+        NextResponse.redirect(new URL("/hello-again", req.url), {});
 
     const cookieStore = cookies();
-    const jwtCookie = cookieStore.get("Authorization");
-    if (!jwtCookie) return logOut();
-    const jwtToken = jwtCookie?.value?.split?.(' ')?.[1];
-    console.log({ jwtToken })
-    if (!jwtToken) return logOut();
+    const jwtCookie = cookieStore.get(JwtTokenStorageKey);
+    if (!jwtCookie) {
+        console.log("no jwt cookie");
+        return logOut();
+    }
+    const jwtToken = jwtCookie?.value;
+    console.log({ jwtToken });
+    if (!jwtToken) {
+        console.log("no jwt token");
+
+        return logOut();
+    }
     try {
         const res = await getUserByTokenOrThrowUnauthorizedError({ jwtToken });
-        console.log({ res })
-        console.log('you are logged in ')
+        console.log({ res });
+        console.log("you are logged in ");
 
         return NextResponse.next();
     } catch (error) {
-        console.log('you are not logged in')
+        console.log("you are not logged in");
         return logOut();
     }
 }

@@ -21,11 +21,14 @@ import { api } from "~/trpc/react";
 import { loginFormSchema, type LoginFormType } from "~/validation-schemas/auth";
 import { useToast } from "~/components/ui/use-toast";
 import { useAtom, useSetAtom } from "jotai";
-import { jwtTokenAtom } from "~/atoms/jwt-token-atom";
+import { JwtTokenStorageKey, jwtTokenAtom } from "~/atoms/jwt-token-atom";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 type UserLoginFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
+  const router = useRouter();
   const registerForm = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),
   });
@@ -38,7 +41,12 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
   const { mutate: loginMutate, isLoading: isLoginMutationLoading } =
     api.auth.logIn.useMutation({
       onSuccess: ({ token }) => {
-        toast({ title: "successfully loggged in" }), setJwtToken(token);
+        toast({ title: "successfully loggged in" });
+        setJwtToken(token);
+        Cookies.set(JwtTokenStorageKey, token, {
+          expires: 60 * 60 * 24 * 365 /* one year */,
+        });
+        router.push("/");
       },
       onError: (error) => {
         toast({

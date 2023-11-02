@@ -7,9 +7,11 @@
  * need to use are documented accordingly near the end.
  */
 import { TRPCError, initTRPC } from "@trpc/server";
+import { cookies } from "next/headers";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
 
 import { db } from "~/server/db";
 import { getUserByTokenOrThrowUnauthorizedError } from "~/server/db-utils";
@@ -104,12 +106,8 @@ export const publicProcedure = t.procedure;
 
 const isLoggedIn = t.middleware(async ({ ctx, next }) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const authHeaders = ctx.headers.get("Authorization");
-  if (!authHeaders) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "No Authorization header provided" });
-  }
 
-  const jwtToken = authHeaders.split(" ")[1];
+  const jwtToken = cookies().get(JwtTokenStorageKey)?.value
   if (!jwtToken) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "No Authorization token provided" });
   }
@@ -124,7 +122,7 @@ const isLoggedIn = t.middleware(async ({ ctx, next }) => {
     });
 
   } catch (error) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials-" });
 
   }
 
