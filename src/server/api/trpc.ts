@@ -104,16 +104,14 @@ export const publicProcedure = t.procedure;
 
 const isLoggedIn = t.middleware(async ({ ctx, next }) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const allHeaders = ctx.headers.forEach(([key, val]) => console.log({ key, val }))
-  console.log({ allHeaders })
   const authHeaders = ctx.headers.get("Authorization");
   if (!authHeaders) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "No Authorization header provided" });
   }
 
   const jwtToken = authHeaders.split(" ")[1];
   if (!jwtToken) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "No Authorization token provided" });
   }
 
   try {

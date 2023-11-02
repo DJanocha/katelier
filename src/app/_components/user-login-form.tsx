@@ -20,7 +20,7 @@ import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { loginFormSchema, type LoginFormType } from "~/validation-schemas/auth";
 import { useToast } from "~/components/ui/use-toast";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { jwtTokenAtom } from "~/atoms/jwt-token-atom";
 
 type UserLoginFormProps = React.HTMLAttributes<HTMLDivElement>;
@@ -30,7 +30,7 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
     resolver: zodResolver(loginFormSchema),
   });
   const { toast } = useToast();
-  const [, setJwtToken] = useAtom(jwtTokenAtom);
+  const setJwtToken = useSetAtom(jwtTokenAtom);
   const { mutate: __tempMutate } = api.auth.__tempProtectedMut.useMutation({
     onSuccess: console.log,
     onError: console.log,
