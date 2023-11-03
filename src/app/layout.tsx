@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 
 import { Providers } from "~/app/providers";
+import { NavigationMenu } from "~/app/_components/navigation-menu";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <Providers headers={headers()}>{children}</Providers>
+        <Providers headers={headers()}>
+          <div className="min flex h-screen max-h-screen min-h-screen w-full flex-col overflow-hidden bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+            <div className="flex-1">{children}</div>
+            <NavigationMenu />
+          </div>
+        </Providers>
       </body>
     </html>
   );

@@ -123,7 +123,7 @@ export function UserRegisterForm({
               )}
               Create an account
             </Button>
-            <span className="self-center text-xl font-semibold">or </span>
+            <span className="self-center font-semibold">or </span>
 
             <Link
               className={buttonVariants({

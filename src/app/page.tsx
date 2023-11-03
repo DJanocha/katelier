@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { LogOutButton } from "~/app/_components/log-out-button";
 import { PageContainer } from "~/app/_components/page-contaiiner";
 
 import { api } from "~/trpc/server";
@@ -14,7 +13,6 @@ export default async function Home() {
           My email is{" "}
           <span className="text-[hsl(280,100%,70%)]">{me?.email}</span>
         </h1>
-        <LogOutButton />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
           <Link

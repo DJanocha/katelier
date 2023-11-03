@@ -9,7 +9,7 @@ export const useAuth = () => {
   const router = useRouter();
   const logOut = useCallback(() => {
     Cookies.set(JwtTokenStorageKey, "", { expires: 2 });
-    router.refresh();
+    router.push("/hello");
   }, [router]);
   return { logOut } as const;
 };

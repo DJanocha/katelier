@@ -105,7 +105,7 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
               )}
               Log in
             </Button>
-            <span className="self-center text-xl font-semibold">or </span>
+            <span className="self-center text-xl">or </span>
 
             <Link
               className={buttonVariants({
