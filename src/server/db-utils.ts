@@ -1,10 +1,13 @@
 import { TRPCError } from "@trpc/server";
-import { bcrypt } from "~/server/bcrypt";
 import { db } from "~/server/db";
-import { type JwtPayload, jwt } from "~/server/jwt";
+import { jwt, type JwtPayload } from "~/server/jwt";
 
-export const getUserByTokenOrThrowUnauthorizedError = async ({ jwtToken }: { jwtToken: string }) => {
+export const getUserByTokenOrThrowUnauthorizedError = async ({ jwtToken }: { jwtToken?: string }) => {
 
+    if (!jwtToken) {
+
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
     let tokenInfo: JwtPayload;
     try {
         tokenInfo = await jwt.decodeToken(jwtToken)
@@ -13,7 +16,7 @@ export const getUserByTokenOrThrowUnauthorizedError = async ({ jwtToken }: { jwt
         throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
-    const { hashedPassword, userId } = tokenInfo;
+    const { userId } = tokenInfo;
     const matchingUserInDb = await db.query.users.findFirst({
         where: ({ id }, { eq }) => eq(id, userId),
     });

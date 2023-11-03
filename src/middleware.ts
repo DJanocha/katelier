@@ -4,38 +4,33 @@ import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
 import { env } from "~/env.mjs";
 import { getUserByTokenOrThrowUnauthorizedError } from "~/server/db-utils";
 
+const mainPageUrl = "/"
+const loginPageUrl = "/hello-again"
 export async function middleware(req: Request) {
-    const isInPublicPage =
+    const goToLoginPage = () =>
+        NextResponse.redirect(new URL(loginPageUrl, req.url), {});
+    const goToMainPage = () =>
+        NextResponse.redirect(new URL(mainPageUrl, req.url), {});
+
+    const isInUnauthorizedPage =
         req.url === env.WEB_URL + "/hello" ||
         req.url === env.WEB_URL + "/hello-again";
-    if (isInPublicPage) {
-        return NextResponse.next();
-    }
-    const logOut = () =>
-        NextResponse.redirect(new URL("/hello-again", req.url), {});
-
     const cookieStore = cookies();
-    const jwtCookie = cookieStore.get(JwtTokenStorageKey);
-    if (!jwtCookie) {
-        console.log("no jwt cookie");
-        return logOut();
-    }
-    const jwtToken = jwtCookie?.value;
-    console.log({ jwtToken });
-    if (!jwtToken) {
-        console.log("no jwt token");
+    const jwtToken = cookieStore.get(JwtTokenStorageKey)?.value;
 
-        return logOut();
-    }
     try {
-        const res = await getUserByTokenOrThrowUnauthorizedError({ jwtToken });
-        console.log({ res });
-        console.log("you are logged in ");
-
+        await getUserByTokenOrThrowUnauthorizedError({ jwtToken });
+        //user is authorized
+        if (isInUnauthorizedPage) {
+            return goToMainPage()
+        }
         return NextResponse.next();
     } catch (error) {
-        console.log("you are not logged in");
-        return logOut();
+        //user is not authorized
+        if (isInUnauthorizedPage) {
+            return NextResponse.next();
+        }
+        return goToLoginPage();
     }
 }
 export const config = {
