@@ -4,8 +4,8 @@ import * as React from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
+import Link from "next/link";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Form,
@@ -17,14 +17,13 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { useToast } from "~/components/ui/use-toast";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import {
-  type RegisterFormType,
   registerFormSchema,
+  type RegisterFormType,
 } from "~/validation-schemas/auth";
-import { useToast } from "~/components/ui/use-toast";
-import Link from "next/link";
 
 type UserRegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
 

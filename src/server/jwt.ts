@@ -8,7 +8,6 @@ export const jwtPayloadSchema = z.object({
     email: z.string(),
 })
 export type JwtPayload = z.infer<typeof jwtPayloadSchema>
-type F = _jwt.JwtPayload & JwtPayload
 
 async function verifyToken(token: string) {
     return new Promise((resolve, reject) => {

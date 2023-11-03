@@ -10,8 +10,7 @@ import { createTRPCReact } from "@trpc/react-query";
 import { useCallback, useMemo, useState } from "react";
 
 import { useAtomValue, useStore } from "jotai";
-import { z } from "zod";
-import { JwtTokenStorageKey, jwtTokenAtom } from "~/atoms/jwt-token-atom";
+import { jwtTokenAtom } from "~/atoms/jwt-token-atom";
 import { type AppRouter } from "~/server/api/root";
 import { getUrl, transformer } from "./shared";
 
