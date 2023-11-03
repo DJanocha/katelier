@@ -22,15 +22,19 @@ export async function middleware(req: Request) {
         await getUserByTokenOrThrowUnauthorizedError({ jwtToken });
         //user is authorized
         if (isInUnauthorizedPage) {
+            console.log('user + unauthed')
             return goToMainPage()
         }
+        console.log('user + protected')
         return NextResponse.next();
     } catch (error) {
         //user is not authorized
         if (isInUnauthorizedPage) {
-            return NextResponse.next();
+            console.log('alien + unauthed')
+            return goToLoginPage();
         }
-        return goToLoginPage();
+        console.log('alien + protected')
+        return NextResponse.next();
     }
 }
 export const config = {
