@@ -10,9 +10,9 @@ export default async function Home() {
   return (
     <PageContainer>
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+        <h1 className="flex flex-col text-center text-5xl font-extrabold tracking-tight sm:text-[5rem]">
           My email is{" "}
-          <span className="text-[hsl(280,100%,70%)]">{me?.email}</span> App
+          <span className="text-[hsl(280,100%,70%)]">{me?.email}</span>
         </h1>
         <LogOutButton />
 

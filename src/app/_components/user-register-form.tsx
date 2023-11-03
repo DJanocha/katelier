@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,6 +24,7 @@ import {
   registerFormSchema,
 } from "~/validation-schemas/auth";
 import { useToast } from "~/components/ui/use-toast";
+import Link from "next/link";
 
 type UserRegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -67,9 +68,13 @@ export function UserRegisterForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} type="email" />
+                    <Input
+                      placeholder="enter your email..."
+                      {...field}
+                      type="email"
+                    />
                   </FormControl>
                   <FormDescription>This is your email .</FormDescription>
                   <FormMessage />
@@ -83,7 +88,11 @@ export function UserRegisterForm({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="shadcn" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="enter your password"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>This is your password</FormDescription>
                   <FormMessage />
@@ -97,7 +106,7 @@ export function UserRegisterForm({
                 <FormItem>
                   <FormLabel>Secret key</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="enter your secret key" {...field} />
                   </FormControl>
                   <FormDescription>
                     This is a unique secret, single-user key needed to be able
@@ -114,6 +123,16 @@ export function UserRegisterForm({
               )}
               Create an account
             </Button>
+            <span className="self-center text-xl font-semibold">or </span>
+
+            <Link
+              className={buttonVariants({
+                variant: "default",
+              })}
+              href="/hello-again"
+            >
+              Log in
+            </Link>
           </div>
         </form>
       </Form>

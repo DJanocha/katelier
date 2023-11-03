@@ -24,9 +24,6 @@ export const authRouter = createTRPCRouter({
       allUsers,
     };
   }),
-  __tempProtectedMut: protectedProcedure.input(z.void()).mutation(({ ctx, input }) => {
-    return { protectedMessage: 'hi', input }
-  }),
   logIn: publicProcedure
     .input(loginFormSchema)
     .mutation(async ({ ctx, input }) => {

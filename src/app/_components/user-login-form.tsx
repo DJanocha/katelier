@@ -3,9 +3,14 @@
 import * as React from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAtom, useSetAtom } from "jotai";
+import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { Button } from "~/components/ui/button";
+import { JwtTokenStorageKey, jwtTokenAtom } from "~/atoms/jwt-token-atom";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,28 +21,20 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { useToast } from "~/components/ui/use-toast";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { loginFormSchema, type LoginFormType } from "~/validation-schemas/auth";
-import { useToast } from "~/components/ui/use-toast";
-import { useAtom, useSetAtom } from "jotai";
-import { JwtTokenStorageKey, jwtTokenAtom } from "~/atoms/jwt-token-atom";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 
 type UserLoginFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
   const router = useRouter();
-  const registerForm = useForm<LoginFormType>({
+  const loginForm = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),
   });
   const { toast } = useToast();
   const setJwtToken = useSetAtom(jwtTokenAtom);
-  const { mutate: __tempMutate } = api.auth.__tempProtectedMut.useMutation({
-    onSuccess: console.log,
-    onError: console.log,
-  });
   const { mutate: loginMutate, isLoading: isLoginMutationLoading } =
     api.auth.logIn.useMutation({
       onSuccess: ({ token }) => {
@@ -66,24 +63,17 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Button variant={"secondary"} onClick={() => __tempMutate()}>
-        tempMutateProtected
-      </Button>
-      <span>
-        jwt: {jwtToken.split("").slice(0, 5).join("")}...
-        {jwtToken.split("").slice(-5).join("")}
-      </span>
-      <Form {...registerForm}>
-        <form onSubmit={registerForm.handleSubmit(loginSubmit)}>
+      <Form {...loginForm}>
+        <form onSubmit={loginForm.handleSubmit(loginSubmit)}>
           <div className="flex flex-col gap-4">
             <FormField
-              control={registerForm.control}
+              control={loginForm.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="enter your email..." {...field} />
                   </FormControl>
                   <FormDescription>This is your email.</FormDescription>
                   <FormMessage />
@@ -91,13 +81,17 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
               )}
             />
             <FormField
-              control={registerForm.control}
+              control={loginForm.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="shadcn" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="enter your password..."
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>This is your password</FormDescription>
                   <FormMessage />
@@ -105,12 +99,22 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
               )}
             />
 
-            <Button disabled={isLoginMutationLoading}>
+            <Button disabled={isLoginMutationLoading} type="submit">
               {isLoginMutationLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Log in
             </Button>
+            <span className="self-center text-xl font-semibold">or </span>
+
+            <Link
+              className={buttonVariants({
+                variant: "default",
+              })}
+              href="/hello"
+            >
+              Create account
+            </Link>
           </div>
         </form>
       </Form>
