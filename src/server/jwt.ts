@@ -1,4 +1,4 @@
-import _jwt from 'jsonwebtoken';
+import * as jose from 'jose'
 import { z } from 'zod';
 import { env } from '~/env.mjs';
 
@@ -9,34 +9,29 @@ export const jwtPayloadSchema = z.object({
 })
 export type JwtPayload = z.infer<typeof jwtPayloadSchema>
 
-async function verifyToken(token: string) {
-    return new Promise((resolve, reject) => {
-        if (!token) reject({})
+export async function sign(payload: JwtPayload): Promise<string> {
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + 60 * 60; // one hour
 
-        _jwt.verify(token, env.JWT_SECRET, (err, decoded) => err ? reject({ message: "token invalid" }) :
-            resolve(decoded))
-    }
-    );
+    return new jose.SignJWT({ ...payload })
+        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+        .setExpirationTime(exp)
+        .setIssuedAt(iat)
+        .setNotBefore(iat)
+        .sign(new TextEncoder().encode(env.JWT_SECRET));
 }
 
-export const decodeToken = async (token: string) => {
-    return new Promise<JwtPayload>((resolve, reject) => {
-        if (!token) return reject({ message: 'token not found' })
+export async function verify(token: string): Promise<JwtPayload> {
+    const { payload } = await jose.jwtVerify(token, new TextEncoder().encode(env.JWT_SECRET));
+    const validatedResult = jwtPayloadSchema.parse(payload)
+    // run some checks on the returned payload, perhaps you expect some specific values
 
-        const decoded = _jwt.decode(token, { complete: true })
-        if (!decoded) { reject({ message: 'could not decode token' }) }
-        const validationResult = jwtPayloadSchema.safeParse(decoded?.payload)
-        if (!validationResult.success) { return reject({ message: 'token-encoded data in unexpected shape', data: decoded?.payload }) }
-        resolve(validationResult.data)
-
-    }
-    );
+    // if its all good, return it, or perhaps just return a boolean
+    return validatedResult;
 }
 
-const jwt = {
-    verifyToken,
-    decodeToken,
-    create: (payload: JwtPayload) => _jwt.sign(payload, env.JWT_SECRET)
+export const jwt = {
+    decodeToken: (token: string) => verify(token),
+    create: (payload: JwtPayload) => sign(payload)
 }
 
-export { verifyToken, jwt };

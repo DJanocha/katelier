@@ -56,7 +56,7 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      const token = jwt.create({
+      const token = await jwt.create({
         userId: matchingUserInDb.id,
         email: matchingUserInDb.email,
         hashedPassword: matchingUserInDbAuthInfo.hashedPassword,
