@@ -32,9 +32,14 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useAuth } from "~/hooks/use-auth";
+import { api } from "~/trpc/react";
 
 export const NavigationMenu = () => {
   const { logOut } = useAuth();
+  const { data: me } = api.auth.getMe.useQuery();
+  if (!me) {
+    return null;
+  }
   return (
     <div className="flex  w-full flex-row justify-end self-stretch bg-gradient-to-b from-white/10 to-white/20 p-2">
       <DropdownMenu>

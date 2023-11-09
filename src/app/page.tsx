@@ -1,10 +1,18 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { PageContainer } from "~/app/_components/page-contaiiner";
 
 import { api } from "~/trpc/server";
+import { type RouterOutputs } from "~/trpc/shared";
 
 export default async function Home() {
-  const { me } = await api.auth.getMe.query();
+  let me: RouterOutputs["auth"]["getMe"]["me"] | undefined;
+  try {
+    const meQueryResult = await api.auth.getMe.query();
+    me = meQueryResult.me;
+  } catch (error) {
+    redirect("/hello-again");
+  }
 
   return (
     <PageContainer>
