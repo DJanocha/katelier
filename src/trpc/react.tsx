@@ -7,10 +7,10 @@ import {
   unstable_httpBatchStreamLink,
 } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 
-import { useAtomValue, useStore } from "jotai";
-import { jwtTokenAtom } from "~/atoms/jwt-token-atom";
+import Cookies from "js-cookie";
+import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
 import { type AppRouter } from "~/server/api/root";
 import { getUrl, transformer } from "./shared";
 
@@ -21,40 +21,35 @@ export function TRPCReactProvider(props: {
   headers: Headers;
 }) {
   const [queryClient] = useState(() => new QueryClient());
-  const jotaiStore = useStore();
-  const jwtToken = useAtomValue(jwtTokenAtom, { store: jotaiStore });
-  const getJwtToken = useCallback(() => jwtToken, [jwtToken]);
-  console.log("trpcreactprovider rerender");
-  console.log({ jwtTokenInTrcpcReactProvider: jwtToken });
 
-  const trpcClient = useMemo(
-    () =>
-      api.createClient({
-        transformer,
-        links: [
-          loggerLink({
-            enabled: (op) =>
-              process.env.NODE_ENV === "development" ||
-              (op.direction === "down" && op.result instanceof Error),
-          }),
-          unstable_httpBatchStreamLink({
-            url: getUrl(),
-            fetch: (input, init) => {
-              const fetcher = getFetch();
-              return fetcher(input, { ...init, credentials: "include" });
-            },
+  const [trpcClient] = useState(() =>
+    api.createClient({
+      transformer,
+      links: [
+        loggerLink({
+          enabled: (op) =>
+            process.env.NODE_ENV === "development" ||
+            (op.direction === "down" && op.result instanceof Error),
+        }),
+        unstable_httpBatchStreamLink({
+          url: getUrl(),
+          fetch: (input, init) => {
+            const fetcher = getFetch();
+            return fetcher(input, { ...init, credentials: "include" });
+          },
 
-            headers() {
-              const heads = new Map(props.headers);
-              heads.set("Authorization", `Bearer ${getJwtToken()}`);
-              heads.set("x-trpc-source", "react");
-              heads.set("Authorization", "Bearer " + getJwtToken());
-              return Object.fromEntries(heads);
-            },
-          }),
-        ],
-      }),
-    [getJwtToken, props.headers],
+          headers() {
+            const heads = new Map(props.headers);
+            heads.set(
+              "Authorization",
+              `Bearer ${Cookies.get(JwtTokenStorageKey)}`,
+            );
+            heads.set("x-trpc-source", "react");
+            return Object.fromEntries(heads);
+          },
+        }),
+      ],
+    }),
   );
 
   return (

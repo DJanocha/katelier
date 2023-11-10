@@ -1,0 +1,1 @@
+export const authPages = ['/hello', '/hello-again'] as const

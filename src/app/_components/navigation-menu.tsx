@@ -32,11 +32,9 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useAuth } from "~/hooks/use-auth";
-import { api } from "~/trpc/react";
 
 export const NavigationMenu = () => {
-  const { logOut } = useAuth();
-  const { data: me } = api.auth.getMe.useQuery();
+  const { logOut, me } = useAuth();
   if (!me) {
     return null;
   }

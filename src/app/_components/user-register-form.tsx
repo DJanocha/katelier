@@ -52,7 +52,6 @@ export function UserRegisterForm({
   const loginSubmit = React.useCallback<SubmitHandler<RegisterFormType>>(
     (registerFormValues) => {
       registerMutate(registerFormValues);
-      console.log({ registerFormValues });
     },
     [registerMutate],
   );

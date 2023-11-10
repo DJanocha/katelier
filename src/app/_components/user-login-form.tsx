@@ -3,13 +3,12 @@
 import * as React from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAtom, useSetAtom } from "jotai";
 import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { JwtTokenStorageKey, jwtTokenAtom } from "~/atoms/jwt-token-atom";
+import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Form,
@@ -34,12 +33,9 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
     resolver: zodResolver(loginFormSchema),
   });
   const { toast } = useToast();
-  const setJwtToken = useSetAtom(jwtTokenAtom);
   const { mutate: loginMutate, isLoading: isLoginMutationLoading } =
     api.auth.logIn.useMutation({
       onSuccess: ({ token }) => {
-        toast({ title: "successfully loggged in" });
-        setJwtToken(token);
         Cookies.set(JwtTokenStorageKey, token, {
           expires: 60 * 60 * 24 * 365 /* one year */,
         });
@@ -58,8 +54,6 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
     (loginFormValues) => loginMutate(loginFormValues),
     [loginMutate],
   );
-  const [jwtToken] = useAtom(jwtTokenAtom);
-  console.log({ jwtTokenInLoginUserForm: jwtToken });
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

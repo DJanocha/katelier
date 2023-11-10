@@ -22,7 +22,6 @@ export const api = createTRPCProxyClient<AppRouter>({
         const heads = new Map(headers());
         heads.set("x-trpc-source", "rsc");
         heads.set('Authorization', 'Backend token')
-        console.log({ headsAfter: heads })
         return Object.fromEntries(heads);
       },
     }),

@@ -12,7 +12,6 @@ export const getUserByTokenOrThrowUnauthorizedError = async ({ jwtToken }: { jwt
     try {
         tokenInfo = await jwt.decodeToken(jwtToken)
     } catch (error) {
-        console.log({ error })
         throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
