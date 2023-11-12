@@ -1,20 +1,20 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
-import { authPages } from "~/constants/auth-pages";
-import { env } from "~/env.mjs";
+import { authPages, type AuthPage, AuthPages } from "~/constants/auth-pages";
 import { getUserByTokenOrThrowUnauthorizedError } from "~/server/db-utils";
 
 
 const mainPageUrl = "/"
-const loginPageUrl = "/hello-again"
-export async function middleware(req: Request) {
+const loginPageUrl: AuthPage = AuthPages["/hello-again"]
+export async function middleware(req: NextRequest) {
     const goToLoginPage = () =>
         NextResponse.redirect(new URL(loginPageUrl, req.url), {});
     const goToMainPage = () =>
         NextResponse.redirect(new URL(mainPageUrl, req.url), {});
+    const { pathname } = req.nextUrl
 
-    const isInAuthFormPage = authPages.some(authPage => req.url === env.WEB_URL + authPage)
+    const isInAuthFormPage = authPages.some(authPage => pathname === authPage)
     const cookieStore = cookies();
     const jwtToken = cookieStore.get(JwtTokenStorageKey)?.value;
 
@@ -30,10 +30,10 @@ export async function middleware(req: Request) {
     } catch (error) {
         //user is not authorized
         if (!isInAuthFormPage) {
-            console.log('logged out + public page')
+            console.log('logged out + protected page')
             return goToLoginPage();
         }
-        console.log('logged out + protected page')
+        console.log('logged out + public page')
         return NextResponse.next();
     }
 }

@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC } from "@trpc/server";
 import { cookies } from "next/headers";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
@@ -105,26 +105,15 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const isLoggedIn = t.middleware(async ({ ctx, next }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 
-  const jwtToken = cookies().get(JwtTokenStorageKey)?.value
-  if (!jwtToken) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "No Authorization token provided" });
-  }
+  const matchingUserInDb = await getUserByTokenOrThrowUnauthorizedError({ jwtToken: cookies().get(JwtTokenStorageKey)?.value })
+  return next({
+    ctx: {
+      ...ctx,
+      user: matchingUserInDb,
+    },
+  });
 
-  try {
-    const matchingUserInDb = await getUserByTokenOrThrowUnauthorizedError({ jwtToken })
-    return next({
-      ctx: {
-        ...ctx,
-        user: matchingUserInDb,
-      },
-    });
-
-  } catch (error) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials-" });
-
-  }
 
 });
 

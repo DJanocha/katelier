@@ -30,14 +30,4 @@ export const getUserByTokenOrThrowUnauthorizedError = async ({ jwtToken }: { jwt
     }
 
     return matchingUserInDb
-    // // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    // const passwordsMatch = await bcrypt.compare(
-    //     matchingUserInDbAuthInfo.hashedPassword,
-    //     hashedPassword,
-    // );
-
-    // if (!passwordsMatch) {
-    //     throw new TRPCError({ code: "UNAUTHORIZED" });
-    // }
-    // return matchingUserInDb
 }
