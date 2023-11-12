@@ -11,6 +11,7 @@ export const useAuth = () => {
   const queryClient = useQueryClient();
   const { data: meData } = api.auth.getMe.useQuery();
   const me = useMemo(() => meData?.me, [meData?.me]);
+  const isLoggedIn = useMemo(() => !!me, [me]);
   const { mutate: logIn } = api.auth.logIn.useMutation();
 
   const logOut = useCallback(() => {
@@ -18,5 +19,5 @@ export const useAuth = () => {
     queryClient.clear();
     router.refresh();
   }, [queryClient, router]);
-  return { logOut, me, logIn } as const;
+  return { logOut, me, logIn, isLoggedIn } as const;
 };

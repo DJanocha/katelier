@@ -3,7 +3,7 @@ import { PageContainer } from "~/app/_components/page-contaiiner";
 const settingsPage = () => {
   return (
     <PageContainer>
-      <span>settings page placeholder</span>
+      <span>Here you&apos;ll be able to edit your profile</span>
     </PageContainer>
   );
 };

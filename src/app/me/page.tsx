@@ -3,7 +3,7 @@ import { PageContainer } from "~/app/_components/page-contaiiner";
 const MePage = () => {
   return (
     <PageContainer>
-      <span>Me page placeholder</span>
+      <span>Your account details will be shown here</span>
     </PageContainer>
   );
 };

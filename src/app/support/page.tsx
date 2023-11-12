@@ -3,7 +3,7 @@ import { PageContainer } from "~/app/_components/page-contaiiner";
 const SupportPage = () => {
   return (
     <PageContainer>
-      <span>support page placeholder</span>
+      <span>Here you&apos;ll be able to contant our support</span>
     </PageContainer>
   );
 };

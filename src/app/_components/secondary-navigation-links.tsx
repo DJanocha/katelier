@@ -14,58 +14,54 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { type AppPage } from "~/constants/app-pages";
+import { type AppPathname } from "~/constants/app-pathnames";
 import { useAuth } from "~/hooks/use-auth";
 
-export const NavigationMenu = () => {
+export const SecondaryNavigationLinks = () => {
   const { logOut, me } = useAuth();
   const router = useRouter();
   const navigateTo = useCallback(
-    (page: AppPage) => router.push(page),
+    (page: AppPathname) => router.push(page),
     [router],
   );
   if (!me) {
     return null;
   }
   return (
-    <div className="flex  w-full flex-row justify-end self-stretch bg-gradient-to-b from-white/10 to-white/20 p-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Avatar className="h-12 w-12 cursor-pointer shadow-2xl">
-            <AvatarImage
-              src="https://github.com/shadcn.png"
-              alt="user avatar"
-            />
-            <AvatarFallback>user avatar</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => navigateTo("/me")}>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigateTo("/billings")}>
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Billing</span>
-              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigateTo("/settings")}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Avatar className="h-12 w-12 cursor-pointer shadow-2xl">
+          <AvatarImage src="https://github.com/shadcn.png" alt="user avatar" />
+          <AvatarFallback>user avatar</AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => navigateTo("/me")}>
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigateTo("/billings")}>
+            <CreditCard className="mr-2 h-4 w-4" />
+            <span>Billing</span>
+            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigateTo("/settings")}>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          {/* <DropdownMenuItem>
               <Keyboard className="mr-2 h-4 w-4" />
               <span>Keyboard shortcuts</span>
               <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
             </DropdownMenuItem> */}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          {/* <DropdownMenuGroup>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        {/* <DropdownMenuGroup>
             <DropdownMenuItem>
               <Users className="mr-2 h-4 w-4" />
               <span>Team</span>
@@ -99,27 +95,26 @@ export const NavigationMenu = () => {
               <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuGroup> */}
-          <DropdownMenuSeparator />
-          {/* <DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {/* <DropdownMenuItem>
             <Github className="mr-2 h-4 w-4" />
             <span>GitHub</span>
           </DropdownMenuItem> */}
-          <DropdownMenuItem onClick={() => navigateTo("/support")}>
-            <LifeBuoy className="mr-2 h-4 w-4" />
-            <span>Support</span>
-          </DropdownMenuItem>
-          {/* <DropdownMenuItem disabled>
+        <DropdownMenuItem onClick={() => navigateTo("/support")}>
+          <LifeBuoy className="mr-2 h-4 w-4" />
+          <span>Support</span>
+        </DropdownMenuItem>
+        {/* <DropdownMenuItem disabled>
             <Cloud className="mr-2 h-4 w-4" />
             <span>API</span>
           </DropdownMenuItem> */}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={logOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={logOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
