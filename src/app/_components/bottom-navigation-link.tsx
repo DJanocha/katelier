@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { Button } from "~/components/ui/button";
 import { type AppPathname } from "~/constants/app-pathnames";
+import { cn } from "~/lib/utils";
 
 export type BottomNavigationLinkProps = {
   path: AppPathname;
@@ -17,7 +18,6 @@ export const BottomNavigationLink = ({
   const pathname = usePathname();
   const router = useRouter();
   const isActive = useMemo(() => pathname === path, [path, pathname]);
-  console.log({ pathname, path, isActive });
   return (
     <Button
       key={path}
@@ -25,7 +25,10 @@ export const BottomNavigationLink = ({
       size={"icon"}
       onClick={() => router.push(path)}
     >
-      <Icon className="stroke-orange-500" size={40} />
+      <Icon
+        className={cn(isActive ? "stroke-orange-500" : "stroke-white")}
+        size={40}
+      />
     </Button>
   );
 };
