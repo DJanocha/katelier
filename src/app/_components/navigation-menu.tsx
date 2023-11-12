@@ -1,21 +1,8 @@
 "use client";
 
-import {
-  Cloud,
-  CreditCard,
-  Github,
-  Keyboard,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  User,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { CreditCard, LifeBuoy, LogOut, Settings, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -23,18 +10,20 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { type AppPage } from "~/constants/app-pages";
 import { useAuth } from "~/hooks/use-auth";
 
 export const NavigationMenu = () => {
   const { logOut, me } = useAuth();
+  const router = useRouter();
+  const navigateTo = useCallback(
+    (page: AppPage) => router.push(page),
+    [router],
+  );
   if (!me) {
     return null;
   }
@@ -54,29 +43,29 @@ export const NavigationMenu = () => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigateTo("/me")}>
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigateTo("/billings")}>
               <CreditCard className="mr-2 h-4 w-4" />
               <span>Billing</span>
               <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigateTo("/settings")}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            {/* <DropdownMenuItem>
               <Keyboard className="mr-2 h-4 w-4" />
               <span>Keyboard shortcuts</span>
               <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
+          {/* <DropdownMenuGroup>
             <DropdownMenuItem>
               <Users className="mr-2 h-4 w-4" />
               <span>Team</span>
@@ -109,20 +98,20 @@ export const NavigationMenu = () => {
               <span>New Team</span>
               <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
             </DropdownMenuItem>
-          </DropdownMenuGroup>
+          </DropdownMenuGroup> */}
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          {/* <DropdownMenuItem>
             <Github className="mr-2 h-4 w-4" />
             <span>GitHub</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
+          </DropdownMenuItem> */}
+          <DropdownMenuItem onClick={() => navigateTo("/support")}>
             <LifeBuoy className="mr-2 h-4 w-4" />
             <span>Support</span>
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>
+          {/* <DropdownMenuItem disabled>
             <Cloud className="mr-2 h-4 w-4" />
             <span>API</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={logOut}>
             <LogOut className="mr-2 h-4 w-4" />
