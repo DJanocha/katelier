@@ -1,3 +1,5 @@
+import { transformArrayToObject } from "~/lib/transformers";
+
 export const appPathnames = [
   "/",
   "/me",
@@ -6,16 +8,9 @@ export const appPathnames = [
   "/support",
   "/calendar",
   "/add",
+  "/add/photo",
+  "/add/note",
 ] as const;
 
 export type AppPathname = (typeof appPathnames)[number];
-
-export const AppPathnames: { [key in AppPathname]: AppPathname } = {
-  "/": "/",
-  "/me": "/me",
-  "/add": "/add",
-  "/settings": "/settings",
-  "/billings": "/billings",
-  "/support": "/support",
-  "/calendar": "/calendar",
-};
+export const AppPathnames = transformArrayToObject(appPathnames)
