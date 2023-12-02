@@ -9,7 +9,7 @@ import { api } from "~/trpc/react";
 export const useAuth = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: meData } = api.auth.getMe.useQuery();
+  const { data: meData } = api.me.getMe.useQuery();
   const me = useMemo(() => meData?.me, [meData?.me]);
   const isLoggedIn = useMemo(() => !!me, [me]);
   const { mutate: logIn } = api.auth.logIn.useMutation();

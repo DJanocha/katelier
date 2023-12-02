@@ -3,8 +3,7 @@ import { PageContainer } from "~/app/_components/page-contaiiner";
 
 import { api } from "~/trpc/server";
 export default async function Home() {
-  const meQueryResult = await api.auth.getMe.query();
-  const me = meQueryResult.me;
+  const {me} = await api.me.getMe.query();
 
   return (
     <PageContainer>

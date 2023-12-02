@@ -1,11 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
 
 import {
   createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
+  publicProcedure
 } from "~/server/api/trpc";
 import { bcrypt } from "~/server/bcrypt";
 import { auth, registrationTokens, users } from "~/server/db/schema";
@@ -13,17 +11,6 @@ import { jwt } from "~/server/jwt";
 import { loginFormSchema, registerFormSchema } from "~/validation-schemas/auth";
 
 export const authRouter = createTRPCRouter({
-  getMe: protectedProcedure.query(({ ctx }) => {
-    return {
-      me: ctx.user,
-    };
-  }),
-  getAllUsers: publicProcedure.input(z.void()).query(async ({ ctx }) => {
-    const allUsers = await ctx.db.query.users.findMany();
-    return {
-      allUsers,
-    };
-  }),
   logIn: publicProcedure
     .input(loginFormSchema)
     .mutation(async ({ ctx, input }) => {

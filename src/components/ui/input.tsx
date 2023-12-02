@@ -1,11 +1,15 @@
 import * as React from "react";
 
 import { cn } from "~/lib/utils";
+import { type TypedOmit } from "~/types/helpers";
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+type InputValue = React.ComponentProps<'input'>['value'] | null
+export type InputProps = TypedOmit<React.InputHTMLAttributes<HTMLInputElement>,'value'> & {value: InputValue}
+
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className,value: nullishValue, type, ...props }, ref) => {
+    
     return (
       <input
         type={type}
@@ -14,6 +18,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className,
         )}
         ref={ref}
+        value={nullishValue===null ? undefined : nullishValue}
+        
         {...props}
       />
     );
