@@ -1,7 +1,8 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useState } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -16,45 +17,51 @@ import { Input } from "~/components/ui/input";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import { objectKeys } from "~/utils/objectKeys";
-import { type Me } from "~/validators/me";
-import { type UpdateMe, updateMeValidator } from "~/validators/update-me";
+import { updateMeValidator, type UpdateMe } from "~/validators/update-me";
 
 export const EditMeForm = () => {
-  const {toast} = useToast()
+  const { toast } = useToast();
+  const router = useRouter();
   const apiUtils = api.useUtils();
-  const {data} = api.me.getMe.useQuery()
+  const { data } = api.me.getMe.useQuery();
   const editMeForm = useForm<UpdateMe>({
     resolver: zodResolver(updateMeValidator),
   });
-  const updateFormValues = useCallback((vals: unknown)=>{
-
-      const updatableFieldsValidationResult = updateMeValidator.safeParse(vals)
-      if(!updatableFieldsValidationResult.success){
-        return
+  const updateFormValues = useCallback(
+    (vals: unknown) => {
+      const updatableFieldsValidationResult = updateMeValidator.safeParse(vals);
+      if (!updatableFieldsValidationResult.success) {
+        return;
       }
-      const newMe = updatableFieldsValidationResult.data
-      objectKeys(newMe).forEach(key=>{
-        editMeForm.setValue(key, newMe[key])
-      })
-  },[editMeForm])
-
-  useEffect(()=>{
-    if(data?.me){
-      updateFormValues(data?.me)
-    }
-  },[data?.me, updateFormValues])
-  const {mutate: updateMe} = api.me.updateMe.useMutation({
-    onSuccess: (updatedMe) => {
-      void apiUtils.me.invalidate()
-      updateFormValues(updatedMe)
+      const newMe = updatableFieldsValidationResult.data;
+      objectKeys(newMe).forEach((key) => {
+        editMeForm.setValue(key, newMe[key]);
+      });
     },
-    onError: ({message}) => {
-      toast({variant: 'destructive', title:message})
+    [editMeForm],
+  );
+
+  useEffect(() => {
+      try {
+        const newMe = updateMeValidator.parse(data?.me);
+        objectKeys(newMe).forEach((key) => {
+          editMeForm.setValue(key, newMe[key]);
+        });
+      } catch (error) {}
+      updateFormValues(data?.me);
+  }, [data?.me, editMeForm, updateFormValues]);
+  const { mutate: updateMe } = api.me.updateMe.useMutation({
+    onSuccess: () => {
+      void apiUtils.me.invalidate();
+      router.refresh();
+    },
+    onError: ({ message }) => {
+      toast({ variant: "destructive", title: message });
     },
   });
   const editMeSubmit = useCallback<SubmitHandler<UpdateMe>>(
     (myUpdatedDetails) => {
-      updateMe(myUpdatedDetails)
+      updateMe(myUpdatedDetails);
     },
     [updateMe],
   );
