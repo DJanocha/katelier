@@ -10,8 +10,6 @@ import {
   uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
-import { createInsertSchema } from "drizzle-zod";
-import { type z } from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -62,3 +60,15 @@ export const registrationTokens = mysqlTable("registration_tokens", {
     .notNull(),
   usedAt: timestamp("used_at"),
 })
+
+export const files = mysqlTable("files", {
+  id: serial("id").primaryKey().notNull(),
+  name: varchar("token", { length: 256 }).notNull(),
+  key: varchar("token", { length: 256 }).notNull(),
+  url: varchar("token", { length: 256 }).notNull(),
+  ownerId: int("owner_id").notNull(),
+  size: int("size").notNull(),
+}, (files)=>({
+  filesOwnerIdIndex: uniqueIndex("files_owner_id").on(files.ownerId)
+
+}))
