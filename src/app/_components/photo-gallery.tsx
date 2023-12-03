@@ -8,6 +8,17 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import { Navigation, Pagination, Parallax } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
@@ -61,13 +72,36 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
                 className="flex flex-row justify-end p-1"
                 data-swiper-parallax="-100"
               >
-                <Button
-                  variant={"ghost"}
-                  className="shadow-green-400 drop-shadow-xl"
-                  onClick={() => deleteImage({ id: image.id })}
-                >
-                  <TrashIcon className="h-6 w-6 text-red-500" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant={"ghost"}
+                      className="shadow-green-400 drop-shadow-xl"
+                    >
+                      <TrashIcon className="h-6 w-6 text-red-500" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteImage({ id: image.id })}
+                      >
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
               <div className="flex flex-col gap-2 p-2" data-swiper-parallax="0">
                 {title ? (
