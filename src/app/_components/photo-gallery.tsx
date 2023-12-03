@@ -69,23 +69,24 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
       }}
       navigation={true}
       modules={[Parallax, Pagination, Navigation, EffectCoverflow]}
-      className="mySwiper w-full"
+      className="mySwiper w-full h-full py-2"
     >
       {images.map((image) => {
         const { name, description = "no description" } = image;
         return (
           <SwiperSlide
             key={image.id}
-            className="h-[400px] w-[300px] max-w-max items-center overflow-hidden rounded-xl bg-cover bg-center"
+            className="h-full w-full max-w-max ring-4 ring-pink-400 items-center py-4 rounded-xl bg-cover bg-center flex flex-col gap-4"
           >
             <div className="relative flex h-[400px] w-[300px] flex-col justify-between ">
               <Image
                 src={image.url}
-                width={300}
-                height={400}
+                width={240}
+                height={360}
                 alt={image.key}
                 className="absolute left-0  top-0 block w-full rounded-xl"
               />
+
               <div
                 className="flex flex-row justify-end p-1"
                 data-swiper-parallax="-100"
@@ -130,17 +131,21 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
                     {name}
                   </div>
                 }
-                <div
-                  className="text-shadow-xl text-sm shadow-black"
-                  data-swiper-parallax="-300"
-                >
-                  <p>{description}</p>
-                </div>
               </div>
+            </div>
+            <div className="bg-slate-800/50">
+              <div
+                className="text-shadow-xl text-sm shadow-black p-2 h-full"
+                data-swiper-parallax="-300"
+              >
+                <p>{description || 'no description...'}</p>
+              </div>
+
             </div>
           </SwiperSlide>
         );
       })}
     </Swiper>
+
   );
 };
