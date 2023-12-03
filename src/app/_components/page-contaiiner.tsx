@@ -15,7 +15,7 @@ export const PageContainer = ({
   showSeparator?: boolean;
 }) => {
   return (
-    <main className="flex flex-col items-center justify-center p-4 text-white h-full">
+    <main className="flex flex-col items-stretch justify-center p-4 text-white h-full w-full">
       <div className="my-4 w-full ">
         {title ? <h3 className="text-lg font-medium">{title}</h3> : null}
         {description ? (
@@ -23,7 +23,7 @@ export const PageContainer = ({
         ) : null}
       </div>
       {showSeparator ? <Separator /> : null}
-      <div className="flex-1 ">{children}</div>
+      <div className="flex-1 overflow-hidden">{children}</div>
     </main>
   );
 };

@@ -1,6 +1,12 @@
 import { PageContainer } from "~/app/_components/page-contaiiner";
-import { ComingSoon } from "~/components/ui/coming-soon";
+import { PhotoGallery } from "~/app/_components/photo-gallery";
+import { api } from "~/trpc/server";
 
-export default function BrowsePhotosPage (){
-    return <PageContainer title="Your photos"><ComingSoon/></PageContainer>
+export default async function BrowsePhotosPage() {
+  const images = await api.files.getMyImages.query();
+  return (
+    <PageContainer title="Your photos">
+      <PhotoGallery images={images} />
+    </PageContainer>
+  );
 }

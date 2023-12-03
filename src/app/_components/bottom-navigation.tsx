@@ -32,7 +32,7 @@ export const BottomNavigation = () => {
     return null;
   }
   return (
-    <div className="flex  w-screen flex-row items-center justify-between self-stretch bg-gradient-to-b from-white/10 to-white/20 px-6 py-2">
+    <div className="flex  w-full flex-row items-center justify-between self-stretch bg-gradient-to-b from-white/10 to-white/20 px-6 py-2">
       {navigationLinkConfigs.map((config) => (
         <BottomNavigationLink {...config} key={config.path} />
       ))}
