@@ -69,6 +69,8 @@ export const files = mysqlTable("files", {
   url: varchar("url", { length: 256 }).notNull(),
   ownerId: int("owner_id").notNull(),
   size: int("size").notNull(),
+  description: varchar("description", { length: 256 }).notNull().default(''),
 }, (files)=>({
-  filesOwnerIdIndex: index("files_owner_id").on(files.ownerId)
+  filesOwnerIdIndex: index("files_owner_id").on(files.ownerId),
+  filesNameIndex: index("files_name").on(files.name),
 }))
