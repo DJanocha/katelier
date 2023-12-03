@@ -9,7 +9,7 @@ import {
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import { updateMeValidator, type UpdateMe } from "~/validators/update-me";
-import { EditableLabel } from "./editable-input";
+import { EditableFormLabel } from "./editable-form-label";
 import { type Me } from "~/validators/me";
 
 type UpdateMeKey = keyof UpdateMe;
@@ -49,7 +49,7 @@ export const EditMeForm = ({ me }: EditMeFormProps) => {
       <form
         className="space-y-8 pt-8"
       >
-        <EditableLabel
+        <EditableFormLabel
           form={editMeForm}
           label="Name"
           name="name"
@@ -60,7 +60,7 @@ export const EditMeForm = ({ me }: EditMeFormProps) => {
           key={"name"}
           placeholder="Your name"
         />
-        <EditableLabel
+        <EditableFormLabel
           form={editMeForm}
           label="Email"
           name="email"
@@ -71,7 +71,7 @@ export const EditMeForm = ({ me }: EditMeFormProps) => {
           key={"email"}
           placeholder="Your email"
         />
-        <EditableLabel
+        <EditableFormLabel
           form={editMeForm}
           label="Phone"
           name="phoneNumber"

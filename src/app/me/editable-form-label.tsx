@@ -6,7 +6,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from '~/components/ui/input';
 import { type TypedOmit } from '~/types/helpers';
 
-export const EditableLabel = <
+export const EditableFormLabel = <
     TFieldValues extends FieldValues = FieldValues,
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
     TForm extends UseFormReturn<TFieldValues> = UseFormReturn<TFieldValues>
