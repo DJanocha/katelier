@@ -9,6 +9,7 @@ import {
   timestamp,
   uniqueIndex,
   varchar,
+  index,
 } from "drizzle-orm/mysql-core";
 
 /**
@@ -63,12 +64,11 @@ export const registrationTokens = mysqlTable("registration_tokens", {
 
 export const files = mysqlTable("files", {
   id: serial("id").primaryKey().notNull(),
-  name: varchar("token", { length: 256 }).notNull(),
-  key: varchar("token", { length: 256 }).notNull(),
-  url: varchar("token", { length: 256 }).notNull(),
+  name: varchar("name", { length: 256 }).notNull(),
+  key: varchar("key", { length: 256 }).notNull(),
+  url: varchar("url", { length: 256 }).notNull(),
   ownerId: int("owner_id").notNull(),
   size: int("size").notNull(),
 }, (files)=>({
-  filesOwnerIdIndex: uniqueIndex("files_owner_id").on(files.ownerId)
-
+  filesOwnerIdIndex: index("files_owner_id").on(files.ownerId)
 }))

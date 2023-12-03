@@ -11,7 +11,7 @@ export const filesRouter = createTRPCRouter({
     .input(registerUploadedFileValidator)
     .output(uploadedFileValidator)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(files).values({ ...input, ownerId: ctx.user.id }).execute();
+      await ctx.db.insert(files).values({...input,ownerId: ctx.user.id});
       const uploadedFile = await ctx.db.query.files.findFirst({ where: eq(files.key, input.key) });
       if(!uploadedFile){
         /**
