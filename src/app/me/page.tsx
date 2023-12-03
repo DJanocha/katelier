@@ -10,7 +10,7 @@ const MePage = async () => {
       description="Inspect or update your contact info."
       showSeparator
     >
-      <EditMeForm />
+      <EditMeForm me={me} />
     </PageContainer>
   );
 };

@@ -10,15 +10,17 @@ import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import { updateMeValidator, type UpdateMe } from "~/validators/update-me";
 import { EditableLabel } from "./editable-input";
+import { type Me } from "~/validators/me";
 
 type UpdateMeKey = keyof UpdateMe;
 
-
-export const EditMeForm = () => {
+export type EditMeFormProps = {
+  me: Me
+}
+export const EditMeForm = ({ me }: EditMeFormProps) => {
   const { toast } = useToast();
   const router = useRouter();
   const apiUtils = api.useUtils();
-  const { data } = api.me.getMe.useQuery();
   const { mutate: updateMe } = api.me.updateMe.useMutation({
     onSuccess: () => {
       void apiUtils.me.invalidate();
@@ -53,7 +55,7 @@ export const EditMeForm = () => {
           name="name"
           onSave={() => saveField("name")}
           control={editMeForm.control}
-          defaultValue={data?.me?.name}
+          defaultValue={me?.name}
           description="This is the name that will be displayed on your profile and in emails."
           key={"name"}
           placeholder="Your name"
@@ -64,7 +66,7 @@ export const EditMeForm = () => {
           name="email"
           onSave={() => saveField("email")}
           control={editMeForm.control}
-          defaultValue={data?.me?.email}
+          defaultValue={me?.email}
           description="This is the email that will be associated with your profile. Currently it won't be used for anything."
           key={"email"}
           placeholder="Your email"
@@ -75,7 +77,7 @@ export const EditMeForm = () => {
           name="phoneNumber"
           onSave={() => saveField("phoneNumber")}
           control={editMeForm.control}
-          defaultValue={data?.me?.phoneNumber}
+          defaultValue={me?.phoneNumber}
           description="This is the phone number that will be associated with your profile. Currently it won't be used for anything."
           key={"phoneNumber"}
           placeholder="Your phone number"

@@ -42,7 +42,7 @@ export const EditableLabel = <
                         <FormLabel>{props.label}</FormLabel>
                         <FormControl>
                             <div className="flex flex-row items-center space-x-4">
-                                <Input placeholder={props.placeholder ?? "Type here..."}{...field} />
+                                <Input placeholder={props.placeholder ?? "Type here..."}{...field} defaultValue={props.defaultValue} />
                                 <CheckIcon onClick={props.onSave} />
                                 <UndoIcon onClick={resetField} />
                             </div>
