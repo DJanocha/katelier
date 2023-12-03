@@ -1,12 +1,17 @@
 "use client";
 
+import { TrashIcon } from "lucide-react";
 import Image from "next/image";
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/pagination';
-import { EffectCoverflow, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/pagination";
+import {
+  Navigation,
+  Pagination,
+  Parallax
+} from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { AspectRatio } from "~/components/ui/aspect-ratio";
+import { Button } from "~/components/ui/button";
 import { type UploadedFile } from "~/validators/uploaded-file";
 export type PhotoGalleryProps = {
   images: UploadedFile[];
@@ -14,32 +19,65 @@ export type PhotoGalleryProps = {
 export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
   return (
     <Swiper
-    effect={'coverflow'}
-    grabCursor={true}
-    centeredSlides={true}
-    slidesPerView={'auto'}
-    coverflowEffect={{
-      rotate: 50,
-      stretch: 0,
-      depth: 100,
-      modifier: 1,
-      slideShadows: true,
-    }}
-    
-    pagination={true}
-    modules={[EffectCoverflow, Pagination]}
-    className="mySwiper w-full py-12"
-  >
-    {images.map(image=>(
+      // style={{
+      //   '--swiper-navigation-color': '#fff',
+      //   '--swiper-pagination-color': '#fff',
+      // }}
+      speed={600}
+      parallax={true}
+      pagination={{
+        clickable: true,
+      }}
+      navigation={true}
+      modules={[Parallax, Pagination, Navigation]}
+      className="mySwiper"
+    >
+      {images.map((image) => {
+        const title = ""//todo: extend file db model schema with optional title and use it here
+        const description = ""//todo: extend file db model schema with optional description and use it here
+        return (
+          <SwiperSlide key={image.id} className="overflow-hidden rounded-xl">
+            <div className="relative flex h-[400px] w-[300px] flex-col justify-between ">
+              <Image
+                src={image.url}
+                width={300}
+                height={400}
+                alt={image.key}
+                className="absolute left-0  top-0 w-full rounded-xl "
+              />
+              <div
+                className="flex flex-row justify-end p-1"
+                data-swiper-parallax="-100"
+              >
+                <Button variant={"ghost"} className="drop-shadow-xl shadow-green-400">
+                  <TrashIcon className="h-6 w-6 text-red-500" />
+                </Button>
+              </div>
+              <div className="flex flex-col gap-2 p-2" data-swiper-parallax="0">
+                {title ? (
+                <div
+                  className="text-slay-100 text-shadow-xl text-xl shadow-black"
+                  data-swiper-parallax="-300"
+                >
+                  {title}
+                </div>
 
-    <SwiperSlide key={image.id} className="bg-center bg-cover w-[300px] h-[300px] ">
-      <AspectRatio ratio={3/4}>
+                ) : null}
+                {description ? (
+                <div
+                  className="text-shadow-xl text-sm shadow-black"
+                  data-swiper-parallax="-300"
+                >
+                  <p>{description}</p>
+                </div>
 
-      <Image src={image.url} width={300} height={400} alt={image.key} className="block w-full rounded-xl shadow-md"/>
-      </AspectRatio>
-    </SwiperSlide>
-    ))}
-  </Swiper>
+                ) : null}
+              </div>
+            </div>
+          </SwiperSlide>
+        );
+      })}
+    </Swiper>
   );
 
 };
