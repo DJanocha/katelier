@@ -1,9 +1,10 @@
 import { PageContainer } from "~/app/_components/page-contaiiner";
+import { ComingSoon } from "~/components/ui/coming-soon";
 
 const CalendarPage = () => {
   return (
-    <PageContainer>
-      <span>Here you&apos;ll be able to add your plans</span>
+    <PageContainer title="Manage your activities" description="Check what happened on specific day">
+      <ComingSoon/>
     </PageContainer>
   );
 };

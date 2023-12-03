@@ -10,6 +10,7 @@ export const appPathnames = [
   "/add",
   "/add/photo",
   "/add/note",
+  "/browse",
 ] as const;
 
 export type AppPathname = (typeof appPathnames)[number];

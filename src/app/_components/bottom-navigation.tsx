@@ -1,5 +1,5 @@
 "use client";
-import { CalendarIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
+import { BookImageIcon, CalendarIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
 import {
   BottomNavigationLink,
   type BottomNavigationLinkProps,
@@ -19,6 +19,10 @@ const navigationLinkConfigs: BottomNavigationLinkProps[] = [
   {
     Icon: PlusCircleIcon,
     path: "/add",
+  },
+  {
+    Icon: BookImageIcon,
+    path: "/browse",
   },
 ];
 

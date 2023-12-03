@@ -1,9 +1,13 @@
 import { PageContainer } from "~/app/_components/page-contaiiner";
+import { ComingSoon } from "~/components/ui/coming-soon";
 
 const SupportPage = () => {
   return (
-    <PageContainer>
-      <span>Here you&apos;ll be able to contant our support</span>
+    <PageContainer
+      title="Would you like to support us?"
+      description="Here's how:"
+    >
+      <ComingSoon />
     </PageContainer>
   );
 };
