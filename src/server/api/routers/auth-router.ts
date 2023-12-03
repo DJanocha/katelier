@@ -1,10 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
-import {
-  createTRPCRouter,
-  publicProcedure
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { bcrypt } from "~/server/bcrypt";
 import { auth, registrationTokens, users } from "~/server/db/schema";
 import { jwt } from "~/server/jwt";

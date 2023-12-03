@@ -2,13 +2,14 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { omit } from "lodash";
 import { z } from "zod";
+
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { files } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
 import {
+  registerUploadedFileValidator,
   uploadedFileValidator,
   type UploadedFile,
-  registerUploadedFileValidator,
 } from "~/validators/uploaded-file";
 
 export const filesRouter = createTRPCRouter({
@@ -56,7 +57,7 @@ export const filesRouter = createTRPCRouter({
           message: "you are not allowed to remove this file",
         });
       }
-      await utapi.deleteFiles([file.key])
+      await utapi.deleteFiles([file.key]);
       await ctx.db.delete(files).where(eq(files.id, input.id));
       return { removedImage: file };
     }),

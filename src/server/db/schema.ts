@@ -3,13 +3,13 @@
 
 import { sql } from "drizzle-orm";
 import {
+  index,
   int,
   mysqlTableCreator,
   serial,
   timestamp,
   uniqueIndex,
   varchar,
-  index,
 } from "drizzle-orm/mysql-core";
 
 /**
@@ -50,7 +50,7 @@ export const auth = mysqlTable(
     userIdIndex: uniqueIndex("name_idx").on(auth.userId),
   }),
 );
-export const authSelectSchema = auth.$inferSelect
+export const authSelectSchema = auth.$inferSelect;
 
 export const registrationTokens = mysqlTable("registration_tokens", {
   id: serial("id").primaryKey().notNull(),
@@ -60,17 +60,21 @@ export const registrationTokens = mysqlTable("registration_tokens", {
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
   usedAt: timestamp("used_at"),
-})
+});
 
-export const files = mysqlTable("files", {
-  id: serial("id").primaryKey().notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
-  key: varchar("key", { length: 256 }).notNull(),
-  url: varchar("url", { length: 256 }).notNull(),
-  ownerId: int("owner_id").notNull(),
-  size: int("size").notNull(),
-  description: varchar("description", { length: 256 }).notNull().default(''),
-}, (files)=>({
-  filesOwnerIdIndex: index("files_owner_id").on(files.ownerId),
-  filesNameIndex: index("files_name").on(files.name),
-}))
+export const files = mysqlTable(
+  "files",
+  {
+    id: serial("id").primaryKey().notNull(),
+    name: varchar("name", { length: 256 }).notNull(),
+    key: varchar("key", { length: 256 }).notNull(),
+    url: varchar("url", { length: 256 }).notNull(),
+    ownerId: int("owner_id").notNull(),
+    size: int("size").notNull(),
+    description: varchar("description", { length: 256 }).notNull().default(""),
+  },
+  (files) => ({
+    filesOwnerIdIndex: index("files_owner_id").on(files.ownerId),
+    filesNameIndex: index("files_name").on(files.name),
+  }),
+);

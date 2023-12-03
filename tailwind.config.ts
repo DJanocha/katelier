@@ -1,5 +1,6 @@
-import { withUt } from "uploadthing/tw";
 import plugin from "tailwindcss/plugin";
+import { withUt } from "uploadthing/tw";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = withUt({
   darkMode: ["class"],

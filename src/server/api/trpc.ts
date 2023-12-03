@@ -6,13 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
 import { cookies } from "next/headers";
 import { type NextRequest } from "next/server";
+import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
 
+import { JwtTokenStorageKey } from "~/atoms/jwt-token-atom";
 import { db } from "~/server/db";
 import { getUserByTokenOrThrowUnauthorizedError } from "~/server/db-utils";
 
@@ -105,16 +105,15 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const isLoggedIn = t.middleware(async ({ ctx, next }) => {
-
-  const matchingUserInDb = await getUserByTokenOrThrowUnauthorizedError({ jwtToken: cookies().get(JwtTokenStorageKey)?.value })
+  const matchingUserInDb = await getUserByTokenOrThrowUnauthorizedError({
+    jwtToken: cookies().get(JwtTokenStorageKey)?.value,
+  });
   return next({
     ctx: {
       ...ctx,
       user: matchingUserInDb,
     },
   });
-
-
 });
 
-export const protectedProcedure = publicProcedure.use(isLoggedIn)
+export const protectedProcedure = publicProcedure.use(isLoggedIn);

@@ -1,6 +1,8 @@
 import { TRPCError } from "@trpc/server";
+
 import { db } from "~/server/db";
 import { jwt, type JwtPayload } from "~/server/jwt";
+
 type GetStuffUsingTokenParams = { jwtToken?: string };
 export const safelyGetUserOrNullByToken = ({
   jwtToken,

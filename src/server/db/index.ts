@@ -8,6 +8,6 @@ export const db = drizzle(
   new Client({
     url: env.DATABASE_URL,
   }).connection(),
-  { schema }
+  { schema },
 );
-export type Database = typeof db
+export type Database = typeof db;

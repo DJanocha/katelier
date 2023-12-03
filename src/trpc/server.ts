@@ -1,9 +1,9 @@
+import { headers } from "next/headers";
 import {
   createTRPCProxyClient,
   loggerLink,
   unstable_httpBatchStreamLink,
 } from "@trpc/client";
-import { headers } from "next/headers";
 
 import { type AppRouter } from "~/server/api/root";
 import { getUrl, transformer } from "./shared";
@@ -21,7 +21,7 @@ export const api = createTRPCProxyClient<AppRouter>({
       headers() {
         const heads = new Map(headers());
         heads.set("x-trpc-source", "rsc");
-        heads.set('Authorization', 'Backend token')
+        heads.set("Authorization", "Backend token");
         return Object.fromEntries(heads);
       },
     }),

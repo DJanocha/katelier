@@ -1,9 +1,9 @@
 import { type ReactNode } from "react";
 
 export type ErrorPage = ({
-    error,
-    reset,
+  error,
+  reset,
 }: {
-    error: Error & { digest?: string }
-    reset: () => void
-}) => ReactNode
+  error: Error & { digest?: string };
+  reset: () => void;
+}) => ReactNode;
