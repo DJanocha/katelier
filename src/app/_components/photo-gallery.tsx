@@ -6,7 +6,12 @@ import { useRouter } from "next/navigation";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
-import { Navigation, Pagination, Parallax } from "swiper/modules";
+import {
+  EffectCoverflow,
+  Navigation,
+  Pagination,
+  Parallax,
+} from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
   AlertDialog,
@@ -47,26 +52,39 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
       //   '--swiper-pagination-color': '#fff',
       // }}
       speed={600}
+      effect="coverflow"
+      coverflowEffect={{
+        rotate: 50,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+        slideShadows: true,
+      }}
+      grabCursor={true}
+      centeredSlides={true}
+      slidesPerView={"auto"}
       parallax={true}
       pagination={{
         clickable: true,
       }}
       navigation={true}
-      modules={[Parallax, Pagination, Navigation]}
-      className="mySwiper"
+      modules={[Parallax, Pagination, Navigation, EffectCoverflow]}
+      className="mySwiper w-full"
     >
       {images.map((image) => {
-        const title = ""; //todo: extend file db model schema with optional title and use it here
-        const description = ""; //todo: extend file db model schema with optional description and use it here
+        const { name, description = "no description" } = image;
         return (
-          <SwiperSlide key={image.id} className="overflow-hidden rounded-xl">
+          <SwiperSlide
+            key={image.id}
+            className="h-[400px] w-[300px] max-w-max items-center overflow-hidden rounded-xl bg-cover bg-center"
+          >
             <div className="relative flex h-[400px] w-[300px] flex-col justify-between ">
               <Image
                 src={image.url}
                 width={300}
                 height={400}
                 alt={image.key}
-                className="absolute left-0  top-0 w-full rounded-xl "
+                className="absolute left-0  top-0 block w-full rounded-xl"
               />
               <div
                 className="flex flex-row justify-end p-1"
@@ -104,22 +122,20 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
                 </AlertDialog>
               </div>
               <div className="flex flex-col gap-2 p-2" data-swiper-parallax="0">
-                {title ? (
+                {
                   <div
                     className="text-slay-100 text-shadow-xl text-xl shadow-black"
                     data-swiper-parallax="-300"
                   >
-                    {title}
+                    {name}
                   </div>
-                ) : null}
-                {description ? (
-                  <div
-                    className="text-shadow-xl text-sm shadow-black"
-                    data-swiper-parallax="-300"
-                  >
-                    <p>{description}</p>
-                  </div>
-                ) : null}
+                }
+                <div
+                  className="text-shadow-xl text-sm shadow-black"
+                  data-swiper-parallax="-300"
+                >
+                  <p>{description}</p>
+                </div>
               </div>
             </div>
           </SwiperSlide>
