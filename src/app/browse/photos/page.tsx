@@ -7,7 +7,7 @@ export default async function BrowsePhotosPage() {
   const images = await api.files.getMyImages.query();
   const isGalleryEmpty = isEmpty(images);
   return (
-    <PageContainer title="Your photos">
+    <PageContainer title="Your photos" className="px-0">
       {isGalleryEmpty ? (
         <span className="text-wrap text-3xl font-bold text-red-100">
           {`Gallery is still empty :)`}
