@@ -12,7 +12,11 @@ export const useAuth = () => {
   const { data: meData } = api.me.getMe.useQuery();
   const me = useMemo(() => meData?.me, [meData?.me]);
   const isLoggedIn = useMemo(() => !!me, [me]);
-  const { mutate: logIn } = api.auth.logIn.useMutation();
+  const { mutate: logIn } = api.auth.logIn.useMutation({
+    onSuccess: ()=>{
+      router.refresh()
+    }
+  });
 
   const logOut = useCallback(() => {
     Cookies.remove(JwtTokenStorageKey);
