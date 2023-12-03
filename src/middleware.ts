@@ -22,18 +22,18 @@ export async function middleware(req: NextRequest) {
         await getUserByTokenOrThrowUnauthorizedError({ jwtToken });
         //user is authorized
         if (isInAuthFormPage) {
-            console.log('logged in + public page')
+            console.log(`logged in + public page: ${pathname}`)
             return goToMainPage()
         }
-        console.log('logged in + protected page')
+        console.log(`logged in + protected page: ${pathname}`)
         return NextResponse.next();
     } catch (error) {
         //user is not authorized
         if (!isInAuthFormPage) {
-            console.log('logged out + protected page')
+            console.log(`logged out + protected page: ${pathname}`)
             return goToLoginPage();
         }
-        console.log('logged out + public page')
+        console.log(`logged out + public page: ${pathname}`)
         return NextResponse.next();
     }
 }
