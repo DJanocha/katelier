@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { omit } from "lodash";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -9,7 +8,6 @@ import { utapi } from "~/server/uploadthing";
 import {
   registerUploadedFileValidator,
   uploadedFileValidator,
-  type UploadedFile,
 } from "~/validators/uploaded-file";
 
 export const filesRouter = createTRPCRouter({
@@ -29,12 +27,40 @@ export const filesRouter = createTRPCRouter({
          */
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
+          message: "file was not edited correctly",
+        });
+      }
+      return {
+        ...uploadedFile,
+      };
+    }),
+  updateImage: protectedProcedure
+    .input(
+      z.object({
+        id: uploadedFileValidator.shape.id,
+        updatedValues: uploadedFileValidator
+          .omit({
+            id: true,
+            key: true,
+            ownerId: true,
+          })
+          .partial(),
+      }),
+    )
+    .output(uploadedFileValidator)
+    .mutation(async ({ ctx, input: { id, updatedValues } }) => {
+      await ctx.db.update(files).set(updatedValues).where(eq(files.id, id));
+      const uploadedFile = await ctx.db.query.files.findFirst({
+        where: eq(files.id, id),
+      });
+      if (!uploadedFile) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
           message: "file was not uploaded correctly",
         });
       }
-      const uploadedFileInfo: UploadedFile = omit(uploadedFile, ["ownerId"]);
       return {
-        ...uploadedFileInfo,
+        ...uploadedFile,
       };
     }),
   removeImage: protectedProcedure
@@ -68,9 +94,6 @@ export const filesRouter = createTRPCRouter({
       const myImages = await ctx.db.query.files.findMany({
         where: eq(files.ownerId, ctx.user.id),
       });
-      const images: UploadedFile[] = myImages.map((image) =>
-        omit(image, ["ownerId"]),
-      );
-      return uploadedFileValidator.array().parse(images);
+      return uploadedFileValidator.array().parse(myImages);
     }),
 });
