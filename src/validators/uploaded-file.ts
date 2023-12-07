@@ -12,6 +12,7 @@ export type UploadedFile = z.infer<typeof uploadedFileValidator>;
 
 export const registerUploadedFileValidator = uploadedFileValidator.omit({
   id: true,
+  ownerId:true
 });
 export type RegisterUploadedFile = z.infer<
   typeof registerUploadedFileValidator

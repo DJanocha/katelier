@@ -5,7 +5,7 @@ import type { OurFileRouter } from "~/app/api/uploadthing/core";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import {
-    registerUploadedFileValidator
+  registerUploadedFileValidator
 } from "~/validators/uploaded-file";
 
 const {
@@ -17,6 +17,7 @@ const {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Uploader = () => {
   const { mutate: registerImage } = api.files.registerImage.useMutation();
+
 
   return (
     <UploadThingUploader
@@ -95,7 +96,7 @@ export const UploadDropzone = () => {
     />
   );
 };
-const UploadButton = () => {
+export const UploadButton = () => {
   const { mutate: registerImage } = api.files.registerImage.useMutation();
 
   return (

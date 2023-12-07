@@ -1,11 +1,14 @@
 "use client";
 
-import { TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { TrashIcon } from "lucide-react";
+
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
+
+import { TRPCError } from "@trpc/server";
 import {
   EffectCoverflow,
   Navigation,
@@ -13,6 +16,7 @@ import {
   Parallax,
 } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +32,8 @@ import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import { type UploadedFile } from "~/validators/uploaded-file";
+import { EditableLabel } from "./editable-label";
+
 export type PhotoGalleryProps = {
   images: UploadedFile[];
 };
@@ -35,6 +41,16 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
   const { toast } = useToast();
   const apiUtils = api.useUtils();
   const router = useRouter();
+  const { mutate: updateImage } = api.files.updateImage.useMutation({
+    onSuccess: () => {
+      router.refresh();
+    },
+    onError: (error) => {
+      if (error instanceof TRPCError) {
+        toast({ title: error.message, variant: "destructive" });
+      }
+    },
+  });
   const { mutate: deleteImage } = api.files.removeImage.useMutation({
     onSuccess: async () => {
       toast({ title: "Removed file" });
@@ -69,22 +85,22 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
       }}
       navigation={true}
       modules={[Parallax, Pagination, Navigation, EffectCoverflow]}
-      className="mySwiper w-full h-full py-2"
+      className="mySwiper h-full w-full items-center py-2"
     >
       {images.map((image) => {
         const { name, description = "no description" } = image;
         return (
           <SwiperSlide
             key={image.id}
-            className="h-full w-full max-w-max ring-4 ring-pink-400 items-center py-4 rounded-xl bg-cover bg-center flex flex-col gap-4"
+            className="flex h-full w-full max-w-max  flex-col items-center gap-4 rounded-xl bg-center py-4 backdrop-blur-sm "
           >
-            <div className="relative flex h-[400px] w-[300px] flex-col justify-between ">
+            <div className="relative flex h-photo-height w-photo-width flex-col justify-between overflow-y-hidden ">
               <Image
                 src={image.url}
-                width={240}
-                height={360}
+                width={300}
+                height={400}
                 alt={image.key}
-                className="absolute left-0  top-0 block w-full rounded-xl"
+                className="absolute left-0  top-0 block w-full overflow-y-hidden rounded-xl"
               />
 
               <div
@@ -95,7 +111,7 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant={"ghost"}
-                      className="shadow-green-400 drop-shadow-xl"
+                      className="shadow-green-400 drop-shadow-xl backdrop-blur-lg"
                     >
                       <TrashIcon className="h-6 w-6 text-red-500" />
                     </Button>
@@ -122,30 +138,53 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-              <div className="flex flex-col gap-2 p-2" data-swiper-parallax="0">
+              <div
+                className="flex w-photo-width flex-col gap-2 p-2 backdrop-blur-xl"
+                data-swiper-parallax="0"
+              >
                 {
                   <div
                     className="text-slay-100 text-shadow-xl text-xl shadow-black"
                     data-swiper-parallax="-300"
                   >
-                    {name}
+                    <EditableLabel
+                      isLabelCompact
+                      label="Name"
+                      defaultValue={name}
+                      onSave={(newVal) =>
+                        updateImage({
+                          id: image.id,
+                          updatedValues: { name: newVal },
+                        })
+                      }
+                    />
                   </div>
                 }
               </div>
             </div>
-            <div className="bg-slate-800/50">
-              <div
-                className="text-shadow-xl text-sm shadow-black p-2 h-full"
-                data-swiper-parallax="-300"
-              >
-                <p>{description || 'no description...'}</p>
-              </div>
 
+            <div
+              className={
+                "text-shadow-xl relative flex h-full w-photo-width flex-col gap-4 p-2 text-sm shadow-black backdrop-blur-xl"
+              }
+              data-swiper-parallax="-300"
+            >
+              <div className="relative flex flex-col gap-4 backdrop-blur-xl ">
+                <EditableLabel
+                  label="Description"
+                  defaultValue={description}
+                  onSave={(newVal) =>
+                    updateImage({
+                      id: image.id,
+                      updatedValues: { description: newVal },
+                    })
+                  }
+                />
+              </div>
             </div>
           </SwiperSlide>
         );
       })}
     </Swiper>
-
   );
 };

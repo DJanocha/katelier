@@ -24,6 +24,9 @@ module.exports = withUt({
         lg: "0 8px 16px var(--tw-shadow-color)",
       },
       colors: {
+        "main-layout-gradient-from":"#2e026d",
+        "main-layout-gradient-via":"#22124D",
+        "main-layout-gradient-to":"#15162c",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -9,7 +9,7 @@ import {
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import { updateMeValidator, type UpdateMe } from "~/validators/update-me";
-import { EditableFormLabel } from "./editable-form-label";
+import { EditableFormLabel } from "../_components/editable-form-label";
 import { type Me } from "~/validators/me";
 
 type UpdateMeKey = keyof UpdateMe;

@@ -6,6 +6,10 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { files } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
 import {
+  getFileNameWithExtensionInfo,
+  updateFileName,
+} from "~/utils/file-name-info";
+import {
   registerUploadedFileValidator,
   uploadedFileValidator,
 } from "~/validators/uploaded-file";
@@ -48,7 +52,28 @@ export const filesRouter = createTRPCRouter({
       }),
     )
     .output(uploadedFileValidator)
-    .mutation(async ({ ctx, input: { id, updatedValues } }) => {
+    .mutation(async ({ ctx, input: { id, updatedValues: _updatedValues } }) => {
+      let updatedName = _updatedValues.name;
+      if (updatedName) {
+        const currentFile = await ctx.db.query.files.findFirst({
+          where: eq(files.id, id),
+        });
+        if (!currentFile) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "could not find file to edit",
+          });
+        }
+        updatedName = updateFileName({
+          from: currentFile.name,
+          to: updatedName,
+        });
+      }
+
+      const updatedValues = _updatedValues;
+      if (updatedName) {
+        updatedValues.name = updatedName;
+      }
       await ctx.db.update(files).set(updatedValues).where(eq(files.id, id));
       const uploadedFile = await ctx.db.query.files.findFirst({
         where: eq(files.id, id),
@@ -94,6 +119,13 @@ export const filesRouter = createTRPCRouter({
       const myImages = await ctx.db.query.files.findMany({
         where: eq(files.ownerId, ctx.user.id),
       });
-      return uploadedFileValidator.array().parse(myImages);
+      return uploadedFileValidator
+        .array()
+        .parse(
+          myImages.map((image) => ({
+            ...image,
+            name: getFileNameWithExtensionInfo(image.name).name,
+          })),
+        );
     }),
 });
