@@ -1,7 +1,7 @@
 import { transformArrayToObject } from "~/lib/transformers";
 
 export const appPathnames = [
-  "/",
+  "/preview",
   "/me",
   "/settings",
   "/billings",

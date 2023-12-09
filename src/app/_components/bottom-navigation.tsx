@@ -10,7 +10,7 @@ import { useAuth } from "~/hooks/use-auth";
 const navigationLinkConfigs: BottomNavigationLinkProps[] = [
   {
     Icon: HomeIcon,
-    path: "/",
+    path: "/preview",
   },
   {
     Icon: CalendarIcon,
