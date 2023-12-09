@@ -12,7 +12,7 @@ export type EditableLabelProps = {
     onSave: (value: string) => void;
     label: string
     isLabelCompact?: boolean;
-    component?: "Textarea" | "Input" | "InputInput"
+    component?: "Textarea" | "Input"
 };
 export const EditableLabel = ({ defaultValue, onSave, label, component = "Input", isLabelCompact = false }: EditableLabelProps) => {
     const [isEditable, setIsEditable] = useState(false);
