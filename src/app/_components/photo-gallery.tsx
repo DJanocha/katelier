@@ -172,6 +172,7 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
               <div className="relative flex flex-col gap-4 backdrop-blur-xl ">
                 <EditableLabel
                   label="Description"
+                  component="Textarea"
                   defaultValue={description}
                   onSave={(newVal) =>
                     updateImage({
