@@ -7,9 +7,9 @@ export const TileLink = ({
   className,
   title,
   description,
-  children=null,
+  children = null,
   ...linkProps
-}: Omit<ComponentProps<typeof Link>,"children"> & {
+}: Omit<ComponentProps<typeof Link>, "children"> & {
   title: ReactNode;
   description?: ReactNode;
   children?: ReactNode;
@@ -17,7 +17,7 @@ export const TileLink = ({
   return (
     <Link
       className={cn(
-        "flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20",
+        "flex max-w-xs flex-col gap-4 rounded-xl bg-white/40 backdrop-blur-2xl border-white/20 border p-4 hover:bg-white/20 focus-visible:neon-orange focus:scale-105",
         className,
       )}
       {...linkProps}
