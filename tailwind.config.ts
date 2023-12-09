@@ -1,5 +1,11 @@
 import plugin from "tailwindcss/plugin";
 import { withUt } from "uploadthing/tw";
+import { z } from "zod";
+
+const neonReadyValidator = z.object({
+  "200": z.string(),
+  "700": z.string(),
+});
 
 /** @type {import('tailwindcss').Config} */
 module.exports = withUt({
@@ -15,8 +21,8 @@ module.exports = withUt({
     },
     extend: {
       spacing: {
-        'photo-width': '300px',
-        'photo-height': '400px'
+        "photo-width": "300px",
+        "photo-height": "400px",
       },
       textShadow: {
         sm: "0 1px 2px var(--tw-shadow-color)",
@@ -24,9 +30,9 @@ module.exports = withUt({
         lg: "0 8px 16px var(--tw-shadow-color)",
       },
       colors: {
-        "main-layout-gradient-from":"#2e026d",
-        "main-layout-gradient-via":"#22124D",
-        "main-layout-gradient-to":"#15162c",
+        "main-layout-gradient-from": "#2e026d",
+        "main-layout-gradient-via": "#22124D",
+        "main-layout-gradient-to": "#15162c",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -84,6 +90,24 @@ module.exports = withUt({
   },
   plugins: [
     require("tailwindcss-animate"),
+
+    plugin(function ({ addUtilities, theme }) {
+      const neonUtilities: Record<string, { boxShadow: string }> = {};
+      const colors = theme("colors");
+      if (!colors) {
+        return;
+      }
+      for (const color in colors) {
+        const _colorConfig: unknown = colors[color];
+        try {
+          const colorConfig = neonReadyValidator.parse(_colorConfig);
+          neonUtilities[`.neon-${color}`] = {
+            boxShadow: `0 0 5px ${colorConfig["200"]}, 0 0 20px ${colorConfig["700"]}`,
+          };
+        } catch (error) {}
+      }
+      addUtilities(neonUtilities)
+    }),
     plugin(function ({ matchUtilities, theme }) {
       matchUtilities(
         {
