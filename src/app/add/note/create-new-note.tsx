@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback } from "react";
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
     Form,
     FormControl,
@@ -17,24 +18,39 @@ import {
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
+import { AppPathnames } from "~/constants/app-pathnames";
 import { api } from "~/trpc/react";
 import {
     createNoteValidator,
     type CreateNote,
 } from "~/validators/created-note";
+import { useRouter } from "next/navigation";
 
 export const CreateNewNote = () => {
     const createNewNoteForm = useForm<CreateNote>({
         resolver: zodResolver(createNoteValidator),
     });
     const { toast } = useToast();
+    const router = useRouter()
     const resetForm = useCallback(() => {
-        createNewNoteForm.reset({ content: "", description: "" })
-    }, [])
+        createNewNoteForm.reset({ content: "", description: "" });
+    }, [createNewNoteForm]);
+    const apiUtils = api.useUtils();
     const { mutate, isLoading } = api.notes.createNewNote.useMutation({
-        onSuccess: () => {
-            toast({ title: "New note created" });
-            resetForm()
+        onSuccess: async () => {
+            toast({
+                title: "New note created",
+                action: (
+                    <Button
+                        className={buttonVariants({ variant: "secondary" })}
+                        onClick={() => router.push(AppPathnames['/browse/notes'])}
+                    >
+                        Browse your notes
+                    </Button>
+                ),
+            });
+            resetForm();
+            await apiUtils.notes.getMyNotes.invalidate();
         },
         onError: ({ message }) => {
             toast({
@@ -46,7 +62,6 @@ export const CreateNewNote = () => {
     });
     const createNewNote = useCallback<SubmitHandler<CreateNote>>(
         (formVals) => {
-
             mutate(formVals);
         },
         [mutate],
@@ -55,7 +70,7 @@ export const CreateNewNote = () => {
     return (
         <Form {...createNewNoteForm}>
             <form onSubmit={createNewNoteForm.handleSubmit(createNewNote)}>
-                <div className="flex flex-col gap-4 w-full">
+                <div className="flex w-full flex-col gap-4">
                     <FormField
                         control={createNewNoteForm.control}
                         name="description"
@@ -91,8 +106,11 @@ export const CreateNewNote = () => {
                     />
 
                     <div className="flex flex-row gap-2">
-
-                        <Button className="w-full" variant={'secondary'} onClick={resetForm}>
+                        <Button
+                            className="w-full"
+                            variant={"secondary"}
+                            onClick={resetForm}
+                        >
                             clear
                         </Button>
                         <Button className="w-full" disabled={isLoading} type="submit">
