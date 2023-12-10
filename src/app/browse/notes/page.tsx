@@ -1,6 +1,14 @@
 import { PageContainer } from "~/app/_components/page-contaiiner";
-import { ComingSoon } from "~/components/ui/coming-soon";
+import { api } from "~/trpc/server";
+import { Note } from "./note";
 
-export default function BrowseNotesPage (){
-    return <PageContainer title="Your quick notes"><ComingSoon/></PageContainer>
+export default async function BrowseNotesPage() {
+    const myNotes = await api.notes.getMyNotes.query();
+    return (
+        <PageContainer title="Your quick notes" className="overflow-auto flex flex-col gap-4">
+            {myNotes.map(note => (<Note note={note} key={note.id} />))}
+        </PageContainer>
+
+
+    );
 }

@@ -78,3 +78,16 @@ export const files = mysqlTable(
     filesNameIndex: index("files_name").on(files.name),
   }),
 );
+export const notes = mysqlTable(
+  "notes",
+  {
+    id: serial("id").primaryKey().notNull(),
+    content: varchar("content", { length: 256 }).notNull(),
+    ownerId: int("owner_id").notNull(),
+    description: varchar("description", { length: 256 }).notNull().default(""),
+  },
+  (notes) => ({
+    filesOwnerIdIndex: index("files_owner_id").on(notes.ownerId),
+    contentUniqueIndex: uniqueIndex("content_unique").on(notes.content),
+  }),
+);

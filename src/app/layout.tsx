@@ -41,8 +41,8 @@ export default function RootLayout({
              */
             routerConfig={extractRouterConfig(ourFileRouter)}
           />
-          <div className="min flex h-screen max-h-screen min-h-screen w-full flex-col overflow-hidden bg-gradient-to-b via-main-layout-gradient-via from-main-layout-gradient-from to-main-layout-gradient-to ">
-            <div className="flex-1 ">{children}</div>
+          <div className="flex h-screen max-h-screen min-h-screen w-full flex-col  bg-gradient-to-b via-main-layout-gradient-via from-main-layout-gradient-from to-main-layout-gradient-to ">
+            <div className="overflow-auto flex-grow">{children}</div>
             <BottomNavigation />
           </div>
         </Providers>
