@@ -1,8 +1,17 @@
 "use client";
 
-import { CreditCard, LifeBuoy, LogOut, Settings, User } from "lucide-react";
+import {
+  CreditCard,
+  ExpandIcon,
+  LifeBuoy,
+  LogOut,
+  Settings,
+  ShrinkIcon,
+  User
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,6 +25,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { type AppPathname } from "~/constants/app-pathnames";
 import { useAuth } from "~/hooks/use-auth";
+import { useFullScreen } from "~/hooks/use-fullscreen";
 
 export const SecondaryNavigationLinks = () => {
   const { logOut, me } = useAuth();
@@ -24,6 +34,7 @@ export const SecondaryNavigationLinks = () => {
     (page: AppPathname) => router.push(page),
     [router],
   );
+  const { isFullScreen, enterFullScreen, exitFullScreen } = useFullScreen();
   if (!me) {
     return null;
   }
@@ -109,10 +120,23 @@ export const SecondaryNavigationLinks = () => {
             <span>API</span>
           </DropdownMenuItem> */}
         <DropdownMenuSeparator />
+        {isFullScreen ? (
+          <DropdownMenuItem onClick={exitFullScreen}>
+            <ShrinkIcon className="mr-2 h-4 w-4" />
+            <span>Exit Fullscreen</span>
+          </DropdownMenuItem>
+
+        ) : (
+
+          <DropdownMenuItem onClick={enterFullScreen}>
+            <ExpandIcon className="mr-2 h-4 w-4" />
+            <span>Enter Fullscreen</span>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
