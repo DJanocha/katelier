@@ -31,17 +31,17 @@ import {
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
-import { type UploadedFile } from "~/validators/uploaded-file";
+import { type UploadedImage } from "~/validators/uploaded-photo";
 import { EditableLabel } from "./editable-label";
 
 export type PhotoGalleryProps = {
-  images: UploadedFile[];
+  images: UploadedImage[];
 };
 export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
   const { toast } = useToast();
   const apiUtils = api.useUtils();
   const router = useRouter();
-  const { mutate: updateImage } = api.files.updateImage.useMutation({
+  const { mutate: updateImage } = api.images.updateImage.useMutation({
     onSuccess: () => {
       router.refresh();
     },
@@ -51,10 +51,10 @@ export const PhotoGallery = ({ images }: PhotoGalleryProps) => {
       }
     },
   });
-  const { mutate: deleteImage } = api.files.removeImage.useMutation({
+  const { mutate: deleteImage } = api.images.removeImage.useMutation({
     onSuccess: async () => {
       toast({ title: "Removed file" });
-      await apiUtils.files.getMyImages.invalidate();
+      await apiUtils.images.getMyImages.invalidate();
       router.refresh();
     },
     onError: () => {

@@ -5,8 +5,8 @@ import type { OurFileRouter } from "~/app/api/uploadthing/core";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import {
-  registerUploadedFileValidator
-} from "~/validators/uploaded-file";
+  registerUploadedImageValidator
+} from "~/validators/uploaded-photo";
 
 const {
   UploadButton: UploadThingUploadButton,
@@ -16,7 +16,7 @@ const {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Uploader = () => {
-  const { mutate: registerImage } = api.files.registerImage.useMutation();
+  const { mutate: registerImage } = api.images.registerImage.useMutation();
 
 
   return (
@@ -48,7 +48,7 @@ const Uploader = () => {
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const UploadDropzone = () => {
-  const { mutate: registerImage } = api.files.registerImage.useMutation({
+  const { mutate: registerImage } = api.images.registerImage.useMutation({
     onSuccess: () => {
       toast({ title: "File uploaded" });
     },
@@ -68,7 +68,7 @@ export const UploadDropzone = () => {
         uploadedFiles.forEach((file) => {
           console.log("registering uploaded file: ", { file });
           const fileValidationResult =
-            registerUploadedFileValidator.safeParse(file);
+            registerUploadedImageValidator.safeParse(file);
           console.log({ fileValidationResult });
           if (!fileValidationResult.success) {
             return toast({
@@ -97,7 +97,7 @@ export const UploadDropzone = () => {
   );
 };
 export const UploadButton = () => {
-  const { mutate: registerImage } = api.files.registerImage.useMutation();
+  const { mutate: registerImage } = api.images.registerImage.useMutation();
 
   return (
     <UploadThingUploadButton

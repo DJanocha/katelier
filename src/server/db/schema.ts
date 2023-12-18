@@ -62,8 +62,8 @@ export const registrationTokens = mysqlTable("registration_tokens", {
   usedAt: timestamp("used_at"),
 });
 
-export const files = mysqlTable(
-  "files",
+export const photos = mysqlTable(
+  "photos",
   {
     id: serial("id").primaryKey().notNull(),
     name: varchar("name", { length: 256 }).notNull(),
@@ -73,9 +73,9 @@ export const files = mysqlTable(
     size: int("size").notNull(),
     description: varchar("description", { length: 256 }).notNull().default(""),
   },
-  (files) => ({
-    filesOwnerIdIndex: index("files_owner_id").on(files.ownerId),
-    filesNameIndex: index("files_name").on(files.name),
+  (photos) => ({
+    photosOwnerIdIndex: index("photos_owner_id").on(photos.ownerId),
+    photosNameIndex: index("photos_name").on(photos.name),
   }),
 );
 export const notes = mysqlTable(

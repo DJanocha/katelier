@@ -3,27 +3,27 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { files } from "~/server/db/schema";
+import { photos } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
 import {
   getFileNameWithExtensionInfo,
   updateFileName,
 } from "~/utils/file-name-info";
 import {
-  registerUploadedFileValidator,
-  uploadedFileValidator,
-} from "~/validators/uploaded-file";
+  registerUploadedImageValidator,
+  uploadedImageValidator,
+} from "~/validators/uploaded-photo";
 
-export const filesRouter = createTRPCRouter({
+export const imagesRouter = createTRPCRouter({
   registerImage: protectedProcedure
-    .input(registerUploadedFileValidator)
-    .output(uploadedFileValidator)
+    .input(registerUploadedImageValidator)
+    .output(uploadedImageValidator)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(files).values({ ...input, ownerId: ctx.user.id });
-      const uploadedFile = await ctx.db.query.files.findFirst({
-        where: eq(files.key, input.key),
+      await ctx.db.insert(photos).values({ ...input, ownerId: ctx.user.id });
+      const uploadedImage = await ctx.db.query.photos.findFirst({
+        where: eq(photos.key, input.key),
       });
-      if (!uploadedFile) {
+      if (!uploadedImage) {
         /**
          * todo:
          * if file was uploaded to uploadthing but not registered in db, file in uploadthing should be removed
@@ -35,14 +35,14 @@ export const filesRouter = createTRPCRouter({
         });
       }
       return {
-        ...uploadedFile,
+        ...uploadedImage,
       };
     }),
   updateImage: protectedProcedure
     .input(
       z.object({
-        id: uploadedFileValidator.shape.id,
-        updatedValues: uploadedFileValidator
+        id: uploadedImageValidator.shape.id,
+        updatedValues: uploadedImageValidator
           .omit({
             id: true,
             key: true,
@@ -51,12 +51,12 @@ export const filesRouter = createTRPCRouter({
           .partial(),
       }),
     )
-    .output(uploadedFileValidator)
+    .output(uploadedImageValidator)
     .mutation(async ({ ctx, input: { id, updatedValues: _updatedValues } }) => {
       let updatedName = _updatedValues.name;
       if (updatedName) {
-        const currentFile = await ctx.db.query.files.findFirst({
-          where: eq(files.id, id),
+        const currentFile = await ctx.db.query.photos.findFirst({
+          where: eq(photos.id, id),
         });
         if (!currentFile) {
           throw new TRPCError({
@@ -74,9 +74,9 @@ export const filesRouter = createTRPCRouter({
       if (updatedName) {
         updatedValues.name = updatedName;
       }
-      await ctx.db.update(files).set(updatedValues).where(eq(files.id, id));
-      const uploadedFile = await ctx.db.query.files.findFirst({
-        where: eq(files.id, id),
+      await ctx.db.update(photos).set(updatedValues).where(eq(photos.id, id));
+      const uploadedFile = await ctx.db.query.photos.findFirst({
+        where: eq(photos.id, id),
       });
       if (!uploadedFile) {
         throw new TRPCError({
@@ -89,11 +89,11 @@ export const filesRouter = createTRPCRouter({
       };
     }),
   removeImage: protectedProcedure
-    .input(uploadedFileValidator.pick({ id: true }))
-    .output(z.object({ removedImage: uploadedFileValidator }))
+    .input(uploadedImageValidator.pick({ id: true }))
+    .output(z.object({ removedImage: uploadedImageValidator }))
     .mutation(async ({ ctx, input }) => {
-      const file = await ctx.db.query.files.findFirst({
-        where: eq(files.id, input.id),
+      const file = await ctx.db.query.photos.findFirst({
+        where: eq(photos.id, input.id),
       });
       if (!file) {
         throw new TRPCError({
@@ -109,17 +109,17 @@ export const filesRouter = createTRPCRouter({
         });
       }
       await utapi.deleteFiles([file.key]);
-      await ctx.db.delete(files).where(eq(files.id, input.id));
+      await ctx.db.delete(photos).where(eq(photos.id, input.id));
       return { removedImage: file };
     }),
   getMyImages: protectedProcedure
     .input(z.void())
-    .output(uploadedFileValidator.array())
+    .output(uploadedImageValidator.array())
     .query(async ({ ctx }) => {
-      const myImages = await ctx.db.query.files.findMany({
-        where: eq(files.ownerId, ctx.user.id),
+      const myImages = await ctx.db.query.photos.findMany({
+        where: eq(photos.ownerId, ctx.user.id),
       });
-      return uploadedFileValidator
+      return uploadedImageValidator
         .array()
         .parse(
           myImages.map((image) => ({

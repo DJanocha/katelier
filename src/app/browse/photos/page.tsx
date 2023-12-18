@@ -4,7 +4,7 @@ import { PhotoGallery } from "~/app/_components/photo-gallery";
 import { api } from "~/trpc/server";
 
 export default async function BrowsePhotosPage() {
-  const images = await api.files.getMyImages.query();
+  const images = await api.images.getMyImages.query();
   const isGalleryEmpty = isEmpty(images);
   return (
     <PageContainer title="Your photos" className="px-0" showSeparator>

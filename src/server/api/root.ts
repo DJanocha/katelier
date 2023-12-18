@@ -1,6 +1,6 @@
 import { authRouter } from "~/server/api/routers/auth-router";
 import { createTRPCRouter } from "~/server/api/trpc";
-import { filesRouter } from "./routers/files-router";
+import { imagesRouter } from "./routers/files-router";
 import { meRouter } from "./routers/me-router";
 import { notesRouter } from "./routers/notes-router";
 
@@ -12,7 +12,7 @@ import { notesRouter } from "./routers/notes-router";
 export const appRouter = createTRPCRouter({
   auth: authRouter,
   me: meRouter,
-  files: filesRouter,
+  images: imagesRouter,
   notes: notesRouter
 });
 
