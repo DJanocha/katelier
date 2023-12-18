@@ -87,7 +87,8 @@ export const notes = mysqlTable(
     description: varchar("description", { length: 256 }).notNull().default(""),
   },
   (notes) => ({
-    filesOwnerIdIndex: index("files_owner_id").on(notes.ownerId),
+    notesOwnerIdIndex: index("notes_owner_id").on(notes.ownerId),
     contentUniqueIndex: uniqueIndex("content_unique").on(notes.content),
   }),
 );
+
