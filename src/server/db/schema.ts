@@ -92,3 +92,16 @@ export const notes = mysqlTable(
   }),
 );
 
+export const drafts = mysqlTable(
+  "drafts",
+  {
+    id: serial("id").primaryKey().notNull(),
+    noteId: int("note_id"),
+    photoId: int("photo_id"),
+    ownerId: int("owner_id").notNull(),
+  },
+  (drafts) => ({
+    draftOwnerIdIndex: index("drafts_owner_id").on(drafts.ownerId),
+  }),
+);
+
